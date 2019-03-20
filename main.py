@@ -6,6 +6,8 @@ from selenium.webdriver.common.action_chains import ActionChains   # for auto sc
 import argparse
 
 class BrowserAuto:
+    delay_ui = 0.5
+
     def __init__(self, addr_park):
         self.addr_park= addr_park
         options = webdriver.ChromeOptions()
@@ -16,7 +18,6 @@ class BrowserAuto:
 
     def scroll_to_element(self, element):
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
-        #print('scroll')
 
     def click(self, strTitle):
         str_comm = '//*[@title="' + strTitle + '"]'
@@ -25,13 +26,14 @@ class BrowserAuto:
         element.click()
 
     def click_id(self, strID):
-        time.sleep(0.5) 
+        time.sleep(self.delay_ui) 
         element = self._get_elm_id(strID)
         #self.scroll_to_element(element)
         element.click()
 
     def fill_text(self, strID, strText):
         try:
+            time.sleep(self.delay_ui) 
             element = self._get_elm_id(strID)
             self.scroll_to_element(element)
             element.send_keys(strText)
@@ -40,10 +42,9 @@ class BrowserAuto:
             print('strText = ', strText)
             print('reason = ', reason)
             print('result = , Keep going.')
-    
 
     def select_inx(self, strID, inx):
-        time.sleep(1)
+        time.sleep(self.delay_ui)
         element = self._get_elm_id(strID)
         self.scroll_to_element(element)
         sele = Select(element)
@@ -51,6 +52,24 @@ class BrowserAuto:
 
     def _get_elm_id(self, strID):
         return self.driver.find_element_by_id(strID)
+
+    def set_yyyymmdd(self, strID, yyyy, mm, date):
+        self.click_id(strID)
+        # self.driver.find_elements_by_xpath(".//*[@id='ui-datepicker-div']/table/tbody/tr/td/a"))
+        time.sleep(self.delay_ui)
+        element = self.driver.find_element_by_class_name('ui-datepicker-year')
+        sele = Select(element)
+        sele.select_by_index(int(yyyy)-1929)  # 0: 1929
+        
+        time.sleep(self.delay_ui)
+        element = self.driver.find_element_by_class_name('ui-datepicker-month')
+        sele = Select(element)
+        sele.select_by_index(int(mm))  # 0: 一月
+
+        elements = self.driver.find_elements_by_xpath(".//*[@id='ui-datepicker-div']/table/tbody/tr/td/a")
+        for dates in elements:
+            if(dates.is_enabled() and dates.is_displayed() and str(dates.get_attribute("innerText")) == date):
+                dates.click()
 
 class ParkAuto:
     name_park = {}
@@ -111,11 +130,11 @@ class ParkAuto:
         self.ok()
 
         # 入園線上申請
-        self.fill_form_schedule(self.id_tab_schedule)
+        #self.fill_form_schedule(self.id_tab_schedule)
         self.fill_form_applyer(self.id_tab_applyer)
-        self.fill_form_leader(self.id_tab_leader)
-        self.fill_form_member(self.id_tab_member)
-        self.fill_form_keeper(self.id_tab_keeper)
+        #self.fill_form_leader(self.id_tab_leader)
+        #self.fill_form_member(self.id_tab_member)
+        #self.fill_form_keeper(self.id_tab_keeper)
 
     def fill_form_schedule(self, id_tab_schedule):
         # 路線行程規劃
@@ -128,6 +147,7 @@ class ParkAuto:
         self.browser.select_inx('ContentPlaceHolder1_sumday', 1) # 總天數
         self.browser.select_inx('ContentPlaceHolder1_applystart', 1) # 入園日期
 
+        # the pseudo schedule: test passed for three parks
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山登山口
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山東峰
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山登山口
@@ -136,6 +156,41 @@ class ParkAuto:
         
     def fill_form_applyer(self, id_tab_applyer):
         self.browser.click_id(id_tab_applyer)
+
+        id_name = 'ContentPlaceHolder1_apply_name'
+        id_tel = 'ContentPlaceHolder1_apply_tel'
+        id_contry = 'ContentPlaceHolder1_ddlapply_country'
+        id_city = 'ContentPlaceHolder1_ddlapply_city'
+        id_address = 'ContentPlaceHolder1_apply_addr'
+        id_mobile = 'ContentPlaceHolder1_apply_mobile'
+        id_fax = 'ContentPlaceHolder1_apply_fax'
+        id_email = 'ContentPlaceHolder1_apply_email'
+        id_pid_nation ='ContentPlaceHolder1_apply_nation'
+        id_pid_num = 'ContentPlaceHolder1_apply_sid'
+        id_sex = 'ContentPlaceHolder1_apply_sex'
+        id_birthday = 'ContentPlaceHolder1_apply_birthday'
+        id_contact_name = 'ContentPlaceHolder1_apply_contactname'
+        id_contact_tel = 'ContentPlaceHolder1_apply_contacttel'
+
+        self.browser.click_id('ContentPlaceHolder1_applycheck') # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令
+        self.browser.fill_text(id_name, 'Sloss Huang') # 姓名
+        self.browser.fill_text(id_tel, '0933-553-288') # 電話
+        self.browser.fill_text(id_contry, '台北市') # contry
+        self.browser.fill_text(id_city, '北投區') # city
+        self.browser.fill_text(id_address, 'xx 路 1 弄 11 號') # address
+        self.browser.fill_text(id_mobile, '0933-553-288') # mobile
+        self.browser.fill_text(id_fax, 'n/a') # fax
+        self.browser.fill_text(id_email, 'sloss_huang@gmail.com') # email
+        self.browser.fill_text(id_pid_nation, '中華民國')
+        self.browser.fill_text(id_pid_num, 'A100987638')
+        self.browser.fill_text(id_sex, '女')
+        # self.browser.fill_text(id_birthday, '1986-07-28')
+        self.browser.set_yyyymmdd(id_birthday, '1986','07','28')
+        #ele = self.browser._get_elm_id(id_birthday)
+        #ele.send_keys('07/28/1986')
+
+        self.browser.fill_text(id_contact_name, 'Kelly Huang')
+        self.browser.fill_text(id_contact_tel, '0918-523-188')
 
     def fill_form_leader(self, id_tab_leader):
         self.browser.click_id(id_tab_leader)
