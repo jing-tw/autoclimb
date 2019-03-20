@@ -31,9 +31,16 @@ class BrowserAuto:
         element.click()
 
     def fill_text(self, strID, strText):
-        element = self._get_elm_id(strID)
-        self.scroll_to_element(element)
-        element.send_keys(strText)
+        try:
+            element = self._get_elm_id(strID)
+            self.scroll_to_element(element)
+            element.send_keys(strText)
+        except selenium.common.exceptions.NoSuchElementException as reason:
+            print('Exception:')
+            print('strText = ', strText)
+            print('reason = ', reason)
+            print('result = , Keep going.')
+    
 
     def select_inx(self, strID, inx):
         time.sleep(1)
@@ -115,7 +122,8 @@ class ParkAuto:
         self.browser.click_id(id_tab_schedule)
         
         self.browser.fill_text('ContentPlaceHolder1_teams_name', 'Sloss Huang 的浪漫') # 隊名
-        self.browser.fill_text('ContentPlaceHolder1_climblinemain', '其他路線') # 主路線
+        # self.browser.fill_text('ContentPlaceHolder1_climblinemain', '其他路線') # 主路線
+        self.browser.select_inx('ContentPlaceHolder1_climblinemain', 1) 
         self.browser.select_inx('ContentPlaceHolder1_climbline', 1) #次路線: C 級其他路線
         self.browser.select_inx('ContentPlaceHolder1_sumday', 1) # 總天數
         self.browser.select_inx('ContentPlaceHolder1_applystart', 1) # 入園日期
