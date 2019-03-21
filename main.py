@@ -6,7 +6,7 @@ from selenium.webdriver.common.action_chains import ActionChains   # for auto sc
 import argparse
 
 class BrowserAuto:
-    delay_ui = 0.5
+    delay_ui = 0.2
 
     def __init__(self, addr_park):
         self.addr_park= addr_park
@@ -15,6 +15,7 @@ class BrowserAuto:
         # self.driver = webdriver.Chrome(chrome_options=options)
         self.driver = webdriver.Chrome()
         self.driver.get(self.addr_park)
+        self.driver.implicitly_wait(10)
 
     def scroll_to_element(self, element):
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
@@ -50,12 +51,9 @@ class BrowserAuto:
         sele = Select(element)
         sele.select_by_index(inx)
 
-    def _get_elm_id(self, strID):
-        return self.driver.find_element_by_id(strID)
-
+    
     def set_yyyymmdd(self, strID, yyyy, mm, date):
         self.click_id(strID)
-        # self.driver.find_elements_by_xpath(".//*[@id='ui-datepicker-div']/table/tbody/tr/td/a"))
         time.sleep(self.delay_ui)
         element = self.driver.find_element_by_class_name('ui-datepicker-year')
         sele = Select(element)
@@ -64,12 +62,43 @@ class BrowserAuto:
         time.sleep(self.delay_ui)
         element = self.driver.find_element_by_class_name('ui-datepicker-month')
         sele = Select(element)
-        sele.select_by_index(int(mm))  # 0: 一月
+        sele.select_by_index(int(mm)-1)  # 0: 一月
 
         elements = self.driver.find_elements_by_xpath(".//*[@id='ui-datepicker-div']/table/tbody/tr/td/a")
         for dates in elements:
             if(dates.is_enabled() and dates.is_displayed() and str(dates.get_attribute("innerText")) == date):
                 dates.click()
+
+    def handle_alert_popup(self):
+        # wait for alert window  
+        # prevent: 
+        #  Message: unexpected alert open: {Alert text :      
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+
+        element = WebDriverWait(self.driver, 10).until(
+            EC.alert_is_present() 
+        )
+
+        # accept
+        alert = self.driver.switch_to_alert()
+        alert.accept()
+
+    def _get_elm_id(self, strID):
+        # https://selenium-python.readthedocs.io/waits.html
+        
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+
+        element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, strID)) and 
+            EC.element_to_be_clickable((By.ID, strID))
+        )
+        
+        return element
+
 
 class ParkAuto:
     name_park = {}
@@ -130,10 +159,10 @@ class ParkAuto:
         self.ok()
 
         # 入園線上申請
-        #self.fill_form_schedule(self.id_tab_schedule)
+        self.fill_form_schedule(self.id_tab_schedule)
         self.fill_form_applyer(self.id_tab_applyer)
-        #self.fill_form_leader(self.id_tab_leader)
-        #self.fill_form_member(self.id_tab_member)
+        self.fill_form_leader(self.id_tab_leader)
+        self.fill_form_member(self.id_tab_member)
         #self.fill_form_keeper(self.id_tab_keeper)
 
     def fill_form_schedule(self, id_tab_schedule):
@@ -174,29 +203,33 @@ class ParkAuto:
 
         self.browser.click_id('ContentPlaceHolder1_applycheck') # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令
         self.browser.fill_text(id_name, 'Sloss Huang') # 姓名
-        self.browser.fill_text(id_tel, '0933-553-288') # 電話
+        self.browser.fill_text(id_tel, '0933553288') # 電話
         self.browser.fill_text(id_contry, '台北市') # contry
         self.browser.fill_text(id_city, '北投區') # city
         self.browser.fill_text(id_address, 'xx 路 1 弄 11 號') # address
-        self.browser.fill_text(id_mobile, '0933-553-288') # mobile
+        self.browser.fill_text(id_mobile, '0933553288') # mobile
         self.browser.fill_text(id_fax, 'n/a') # fax
         self.browser.fill_text(id_email, 'sloss_huang@gmail.com') # email
         self.browser.fill_text(id_pid_nation, '中華民國')
         self.browser.fill_text(id_pid_num, 'A100987638')
         self.browser.fill_text(id_sex, '女')
-        # self.browser.fill_text(id_birthday, '1986-07-28')
-        self.browser.set_yyyymmdd(id_birthday, '1986','07','28')
-        #ele = self.browser._get_elm_id(id_birthday)
-        #ele.send_keys('07/28/1986')
-
+        self.browser.set_yyyymmdd(id_birthday, '1986','07','27')
         self.browser.fill_text(id_contact_name, 'Kelly Huang')
         self.browser.fill_text(id_contact_tel, '0918-523-188')
 
     def fill_form_leader(self, id_tab_leader):
+        id_leader = 'ContentPlaceHolder1_copyapply'
         self.browser.click_id(id_tab_leader)
-
+        self.browser.click_id(id_leader)
+        
     def fill_form_member(self, id_tab_member):
+        id_confirm = 'ContentPlaceHolder1_member_keytype' # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令。
         self.browser.click_id(id_tab_member)
+        self.browser.click_id(id_confirm)
+        print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
+        self.browser.handle_alert_popup()
+
+        self.browser.fill_text('ContentPlaceHolder1_lisMem_member_name_0', 'Sloss Husang')
 
     def fill_form_keeper(self, id_tab_keeper):
         self.browser.click_id(id_tab_keeper)
