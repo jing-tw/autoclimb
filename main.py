@@ -98,6 +98,17 @@ class BrowserAuto:
         )
         
         return element
+        
+
+        '''
+        def find(driver):
+            element = driver.find_elements_by_id(strID)
+            if element:
+                return element
+            else:
+                return False
+        element = WebDriverWait(self.driver, 10).until(find)
+        '''
 
 
 class ParkAuto:
@@ -113,7 +124,16 @@ class ParkAuto:
     def __init__(self, park, count_member):
         print('Start Taiwan National Park Automation ')
         self.park = park
-        self.count_member = count_member
+
+        # team
+        self.dict_team = {
+            'name': 'Sloss Huang 的浪漫',
+            'climbline_main_idx': 1,       # 主路線 (default idx)
+            'climbline_sub_idx': 1,        # 次路線 (default idx)
+            'total_day': 1,                # 總天數 (default)
+            'date_applystart_idx': 1,           # 入園日期 (default idx)
+            'member_count': 3,
+        }
         
     def run(self):
         self.browser = BrowserAuto(self.addr_park)
@@ -159,32 +179,41 @@ class ParkAuto:
         self.ok()
 
         # 入園線上申請
-        self.fill_form_schedule(self.id_tab_schedule)
+        self.fill_form_schedule(self.id_tab_schedule, self.dict_team)
         self.fill_form_applyer(self.id_tab_applyer)
         self.fill_form_leader(self.id_tab_leader)
         self.fill_form_member(self.id_tab_member)
         #self.fill_form_keeper(self.id_tab_keeper)
 
-    def fill_form_schedule(self, id_tab_schedule):
+
+
+    def fill_form_schedule(self, id_tab_schedule, dict_team):
         # 路線行程規劃
         self.browser.click_id(id_tab_schedule)
         
-        self.browser.fill_text('ContentPlaceHolder1_teams_name', 'Sloss Huang 的浪漫') # 隊名
-        # self.browser.fill_text('ContentPlaceHolder1_climblinemain', '其他路線') # 主路線
-        self.browser.select_inx('ContentPlaceHolder1_climblinemain', 1) 
-        self.browser.select_inx('ContentPlaceHolder1_climbline', 1) #次路線: C 級其他路線
-        self.browser.select_inx('ContentPlaceHolder1_sumday', 1) # 總天數
-        self.browser.select_inx('ContentPlaceHolder1_applystart', 1) # 入園日期
+        self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name']) # 隊名
+        self.browser.select_inx('ContentPlaceHolder1_climblinemain', dict_team['climbline_main_idx']) # 主路線
+        self.browser.select_inx('ContentPlaceHolder1_climbline', dict_team['climbline_sub_idx']) #次路線
+        self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數
+        self.browser.select_inx('ContentPlaceHolder1_applystart', dict_team['date_applystart_idx']) # 入園日期
 
         # the pseudo schedule: test passed for three parks
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山登山口
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山東峰
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山登山口
         self.browser.click_id('ContentPlaceHolder1_btnover')   # 完成今日路線
-        self.browser.select_inx('ContentPlaceHolder1_teams_count', self.count_member) # 人數
+        self.browser.select_inx('ContentPlaceHolder1_teams_count', dict_team['member_count']) # 人數
         
     def fill_form_applyer(self, id_tab_applyer):
         self.browser.click_id(id_tab_applyer)
+
+        dict_person = {
+            'name': 'Slss Huang',
+            'tel': '0933553288',
+            'contry': '台北市',
+            'city': '北投區',
+
+        }
 
         id_name = 'ContentPlaceHolder1_apply_name'
         id_tel = 'ContentPlaceHolder1_apply_tel'
@@ -229,7 +258,35 @@ class ParkAuto:
         print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
         self.browser.handle_alert_popup()
 
-        self.browser.fill_text('ContentPlaceHolder1_lisMem_member_name_0', 'Sloss Husang')
+        id_name = 'ContentPlaceHolder1_lisMem_member_name_'
+        id_tel = 'ContentPlaceHolder1_lisMem_member_tel_'
+        id_contry = 'ContentPlaceHolder1_lisMem_ddlmember_country_'
+        id_city = 'ContentPlaceHolder1_lisMem_ddlmember_city_'
+        id_address = 'ContentPlaceHolder1_lisMem_member_addr_'
+        id_mobile = 'ContentPlaceHolder1_lisMem_member_mobile_'
+        id_email = 'ContentPlaceHolder1_lisMem_member_email_'
+        id_pid_nation ='ContentPlaceHolder1_lisMem_member_nation_'
+        id_pid_num = 'ContentPlaceHolder1_lisMem_member_sid_'
+        id_sex = 'ContentPlaceHolder1_lisMem_member_sex_'
+        id_birthday = 'ContentPlaceHolder1_lisMem_member_birthday_'
+        id_contact_name = 'ContentPlaceHolder1_lisMem_member_contactname_'
+        id_contact_tel = 'ContentPlaceHolder1_lisMem_member_contacttel_'
+
+        for i in range(0, self.dict_team['member_count']):
+            self.browser.fill_text(id_name+str(i), 'Sloss Husang')
+            self.browser.fill_text(id_tel+str(i), '0933553288') # 電話
+            self.browser.fill_text(id_contry+str(i), '台北市') # contry
+            self.browser.fill_text(id_city+str(i), '北投區') # city
+            self.browser.fill_text(id_address+str(i), 'xx 路 1 弄 11 號') # address
+            self.browser.fill_text(id_mobile+str(i), '0933553288') # mobile
+            self.browser.fill_text(id_email+str(i), 'sloss_huang@gmail.com') # email
+            self.browser.fill_text(id_pid_nation+str(i), '中華民國')
+            self.browser.fill_text(id_pid_num+str(i), 'A100987638')
+            self.browser.fill_text(id_sex+str(i), '女')
+            self.browser.set_yyyymmdd(id_birthday+str(i), '1986','07','27')
+            self.browser.fill_text(id_contact_name+str(i), 'Kelly Huang')
+            self.browser.fill_text(id_contact_tel+str(i), '0918-523-188')
+
 
     def fill_form_keeper(self, id_tab_keeper):
         self.browser.click_id(id_tab_keeper)
