@@ -27,12 +27,14 @@ class BrowserAuto:
         self.scroll_to_element(element)
         element.click()
 
+
     def click_id(self, strID):
         bRun = True
         cnt = 0
         while bRun:
             try:
-                if cnt > self.MAX_WAIT_CNT: 
+                if cnt > self.MAX_WAIT_CNT:
+                    print('Error: cnt > self.MAX_WAIT_CNT') 
                     bRun = False
                 time.sleep(self.WAIT_SEC) 
                 element = self._get_elm_id(strID)
@@ -45,6 +47,26 @@ class BrowserAuto:
                 cnt = cnt + 1
 
     def fill_text(self, strID, strText):
+        bRun = True
+        cnt = 0
+        while bRun:
+            try:
+                if cnt > self.MAX_WAIT_CNT:
+                    print('Error: cnt > self.MAX_WAIT_CNT') 
+                    bRun = False
+                # fill_text
+                time.sleep(self.WAIT_SEC) 
+                element = self._get_elm_id(strID)
+                self.scroll_to_element(element)
+                element.send_keys(strText)
+                # end of fill_text
+                bRun = False
+            except (selenium.common.exceptions.StaleElementReferenceException, selenium.common.exceptions.NoSuchElementException, selenium.common.exceptions.ElementNotInteractableException) as err:
+                print('Exception: ', err)
+                print('Wait and try again')
+                cnt = cnt + 1
+
+        '''
         try:
             time.sleep(self.WAIT_SEC) 
             element = self._get_elm_id(strID)
@@ -55,14 +77,28 @@ class BrowserAuto:
             print('strText = ', strText)
             print('reason = ', reason)
             print('result = , Keep going.')
+        '''
 
     def select_inx(self, strID, inx):
-        time.sleep(self.WAIT_SEC)
-        element = self._get_elm_id(strID)
-        self.scroll_to_element(element)
-        sele = Select(element)
-        sele.select_by_index(inx)
-
+        bRun = True
+        cnt = 0
+        while bRun:
+            try:
+                if cnt > self.MAX_WAIT_CNT:
+                    print('Error: cnt > self.MAX_WAIT_CNT') 
+                    bRun = False
+                # select
+                time.sleep(self.WAIT_SEC)
+                element = self._get_elm_id(strID)
+                self.scroll_to_element(element)
+                sele = Select(element)
+                sele.select_by_index(inx)
+                # end of select
+                bRun = False
+            except selenium.common.exceptions.StaleElementReferenceException as err:
+                print('Exception: ', err)
+                print('Wait and try again')
+                cnt = cnt + 1
     
     def set_yyyymmdd(self, strID, yyyy, mm, date):
         self.click_id(strID)
@@ -78,7 +114,7 @@ class BrowserAuto:
 
         elements = self.driver.find_elements_by_xpath(".//*[@id='ui-datepicker-div']/table/tbody/tr/td/a")
         for dates in elements:
-            if(dates.is_enabled() and dates.is_displayed() and str(dates.get_attribute("innerText")) == date):
+            if(dates.is_enabled() and dates.is_displayed() and str(dates.get_attribute("innerText")) == str(date)):
                 dates.click()
 
     def handle_alert_popup(self):
@@ -146,7 +182,7 @@ class ParkAuto:
             'climbline_sub_idx': 1,        # 次路線 (default idx)
             'total_day': 1,                # 總天數 (default)
             'date_applystart_idx': 1,           # 入園日期 (default idx)
-            'member_count': 3,
+            'member_count': count_member,
         }
 
         # member list
@@ -261,19 +297,19 @@ class ParkAuto:
         self.browser.handle_alert_popup()
 
         dict_id={}
-        dict_id['id_name'] = 'ContentPlaceHolder1_lisMem_member_name_'
-        dict_id['id_tel'] = 'ContentPlaceHolder1_lisMem_member_tel_'
-        dict_id['id_contry'] = 'ContentPlaceHolder1_lisMem_ddlmember_country_'
-        dict_id['id_city'] = 'ContentPlaceHolder1_lisMem_ddlmember_city_'
-        dict_id['id_address'] = 'ContentPlaceHolder1_lisMem_member_addr_'
-        dict_id['id_mobile'] = 'ContentPlaceHolder1_lisMem_member_mobile_'
-        dict_id['id_email'] = 'ContentPlaceHolder1_lisMem_member_email_'
-        dict_id['id_pid_nation'] = 'ContentPlaceHolder1_lisMem_member_nation_'
-        dict_id['id_pid_num'] = 'ContentPlaceHolder1_lisMem_member_sid_'
-        dict_id['id_sex'] = 'ContentPlaceHolder1_lisMem_member_sex_'
-        dict_id['id_birthday'] = 'ContentPlaceHolder1_lisMem_member_birthday_'
-        dict_id['id_contact_name'] = 'ContentPlaceHolder1_lisMem_member_contactname_'
-        dict_id['id_contact_tel'] = 'id_contact_tel'
+        dict_id['id_name'] = 'ContentPlaceHolder1_lisMem_member_name'
+        dict_id['id_tel'] = 'ContentPlaceHolder1_lisMem_member_tel'
+        dict_id['id_contry'] = 'ContentPlaceHolder1_lisMem_ddlmember_country'
+        dict_id['id_city'] = 'ContentPlaceHolder1_lisMem_ddlmember_city'
+        dict_id['id_address'] = 'ContentPlaceHolder1_lisMem_member_addr'
+        dict_id['id_mobile'] = 'ContentPlaceHolder1_lisMem_member_mobile'
+        dict_id['id_email'] = 'ContentPlaceHolder1_lisMem_member_email'
+        dict_id['id_pid_nation'] = 'ContentPlaceHolder1_lisMem_member_nation'
+        dict_id['id_pid_num'] = 'ContentPlaceHolder1_lisMem_member_sid'
+        dict_id['id_sex'] = 'ContentPlaceHolder1_lisMem_member_sex'
+        dict_id['id_birthday'] = 'ContentPlaceHolder1_lisMem_member_birthday'
+        dict_id['id_contact_name'] = 'ContentPlaceHolder1_lisMem_member_contactname'
+        dict_id['id_contact_tel'] = 'ContentPlaceHolder1_lisMem_member_contacttel'
 
         lst_mem = self.lst_mem
         for i in range(1, len(lst_mem)):
@@ -283,7 +319,7 @@ class ParkAuto:
         if i == 0:
             strIdx = ''
         else:
-            strIdx = str(i)
+            strIdx = '_' + str(i - 1)
         self.browser.fill_text(dict_id['id_name']+strIdx, lst_mem[i]['id_name'])
         self.browser.fill_text(dict_id['id_tel']+strIdx, lst_mem[i]['id_tel']) # 電話
         self.browser.fill_text(dict_id['id_contry']+strIdx, lst_mem[i]['id_contry']) # contry
