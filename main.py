@@ -6,7 +6,8 @@ from selenium.webdriver.common.action_chains import ActionChains   # for auto sc
 import argparse
 
 class BrowserAuto:
-    delay_ui = 0.2
+    WAIT_SEC = 0.2
+    MAX_WAIT_CNT = 500
 
     def __init__(self, addr_park):
         self.addr_park= addr_park
@@ -27,14 +28,25 @@ class BrowserAuto:
         element.click()
 
     def click_id(self, strID):
-        time.sleep(self.delay_ui) 
-        element = self._get_elm_id(strID)
-        #self.scroll_to_element(element)
-        element.click()
+        bRun = True
+        cnt = 0
+        while bRun:
+            try:
+                if cnt > self.MAX_WAIT_CNT: 
+                    bRun = False
+                time.sleep(self.WAIT_SEC) 
+                element = self._get_elm_id(strID)
+                #self.scroll_to_element(element)
+                element.click()
+                bRun = False
+            except selenium.common.exceptions.StaleElementReferenceException as err:
+                print('Exception: ', err)
+                print('Wait and try again')
+                cnt = cnt + 1
 
     def fill_text(self, strID, strText):
         try:
-            time.sleep(self.delay_ui) 
+            time.sleep(self.WAIT_SEC) 
             element = self._get_elm_id(strID)
             self.scroll_to_element(element)
             element.send_keys(strText)
@@ -45,7 +57,7 @@ class BrowserAuto:
             print('result = , Keep going.')
 
     def select_inx(self, strID, inx):
-        time.sleep(self.delay_ui)
+        time.sleep(self.WAIT_SEC)
         element = self._get_elm_id(strID)
         self.scroll_to_element(element)
         sele = Select(element)
@@ -54,12 +66,12 @@ class BrowserAuto:
     
     def set_yyyymmdd(self, strID, yyyy, mm, date):
         self.click_id(strID)
-        time.sleep(self.delay_ui)
+        time.sleep(self.WAIT_SEC)
         element = self.driver.find_element_by_class_name('ui-datepicker-year')
         sele = Select(element)
         sele.select_by_index(int(yyyy)-1929)  # 0: 1929
         
-        time.sleep(self.delay_ui)
+        time.sleep(self.WAIT_SEC)
         element = self.driver.find_element_by_class_name('ui-datepicker-month')
         sele = Select(element)
         sele.select_by_index(int(mm)-1)  # 0: 一月
@@ -121,9 +133,11 @@ class ParkAuto:
     id_tab_member = 'ContentPlaceHolder1_menu3'
     id_tab_keeper = 'ContentPlaceHolder1_menu4'
 
-    def __init__(self, park, count_member):
+    def __init__(self, park, lst_mem):
         print('Start Taiwan National Park Automation ')
         self.park = park
+
+        count_member = len(lst_mem)
 
         # team
         self.dict_team = {
@@ -134,6 +148,11 @@ class ParkAuto:
             'date_applystart_idx': 1,           # 入園日期 (default idx)
             'member_count': 3,
         }
+
+        # member list
+        self.lst_mem = lst_mem
+
+        
         
     def run(self):
         self.browser = BrowserAuto(self.addr_park)
@@ -179,7 +198,7 @@ class ParkAuto:
         self.ok()
 
         # 入園線上申請
-        self.fill_form_schedule(self.id_tab_schedule, self.dict_team)
+        self.fill_form_schedule(self.id_tab_schedule)
         self.fill_form_applyer(self.id_tab_applyer)
         self.fill_form_leader(self.id_tab_leader)
         self.fill_form_member(self.id_tab_member)
@@ -187,7 +206,8 @@ class ParkAuto:
 
 
 
-    def fill_form_schedule(self, id_tab_schedule, dict_team):
+    def fill_form_schedule(self, id_tab_schedule):
+        dict_team = self.dict_team
         # 路線行程規劃
         self.browser.click_id(id_tab_schedule)
         
@@ -207,44 +227,26 @@ class ParkAuto:
     def fill_form_applyer(self, id_tab_applyer):
         self.browser.click_id(id_tab_applyer)
 
-        dict_person = {
-            'name': 'Slss Huang',
-            'tel': '0933553288',
-            'contry': '台北市',
-            'city': '北投區',
-
-        }
-
-        id_name = 'ContentPlaceHolder1_apply_name'
-        id_tel = 'ContentPlaceHolder1_apply_tel'
-        id_contry = 'ContentPlaceHolder1_ddlapply_country'
-        id_city = 'ContentPlaceHolder1_ddlapply_city'
-        id_address = 'ContentPlaceHolder1_apply_addr'
-        id_mobile = 'ContentPlaceHolder1_apply_mobile'
-        id_fax = 'ContentPlaceHolder1_apply_fax'
-        id_email = 'ContentPlaceHolder1_apply_email'
-        id_pid_nation ='ContentPlaceHolder1_apply_nation'
-        id_pid_num = 'ContentPlaceHolder1_apply_sid'
-        id_sex = 'ContentPlaceHolder1_apply_sex'
-        id_birthday = 'ContentPlaceHolder1_apply_birthday'
-        id_contact_name = 'ContentPlaceHolder1_apply_contactname'
-        id_contact_tel = 'ContentPlaceHolder1_apply_contacttel'
+        dict_id={}
+        dict_id['id_name'] = 'ContentPlaceHolder1_apply_name'
+        dict_id['id_tel'] = 'ContentPlaceHolder1_apply_tel'
+        dict_id['id_contry'] = 'ContentPlaceHolder1_ddlapply_country'
+        dict_id['id_city'] = 'ContentPlaceHolder1_ddlapply_city'
+        dict_id['id_address'] = 'ContentPlaceHolder1_apply_addr'
+        dict_id['id_mobile'] = 'ContentPlaceHolder1_apply_mobile'
+        dict_id['id_fax'] = 'ContentPlaceHolder1_apply_fax'
+        dict_id['id_email'] = 'ContentPlaceHolder1_apply_email'
+        dict_id['id_pid_nation'] = 'ContentPlaceHolder1_apply_nation'
+        dict_id['id_pid_num'] = 'ContentPlaceHolder1_apply_sid'
+        dict_id['id_sex'] = 'ContentPlaceHolder1_apply_sex'
+        dict_id['id_birthday'] = 'ContentPlaceHolder1_apply_birthday'
+        dict_id['id_contact_name'] = 'ContentPlaceHolder1_apply_contactname'
+        dict_id['id_contact_tel'] = 'ContentPlaceHolder1_apply_contacttel'
 
         self.browser.click_id('ContentPlaceHolder1_applycheck') # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令
-        self.browser.fill_text(id_name, 'Sloss Huang') # 姓名
-        self.browser.fill_text(id_tel, '0933553288') # 電話
-        self.browser.fill_text(id_contry, '台北市') # contry
-        self.browser.fill_text(id_city, '北投區') # city
-        self.browser.fill_text(id_address, 'xx 路 1 弄 11 號') # address
-        self.browser.fill_text(id_mobile, '0933553288') # mobile
-        self.browser.fill_text(id_fax, 'n/a') # fax
-        self.browser.fill_text(id_email, 'sloss_huang@gmail.com') # email
-        self.browser.fill_text(id_pid_nation, '中華民國')
-        self.browser.fill_text(id_pid_num, 'A100987638')
-        self.browser.fill_text(id_sex, '女')
-        self.browser.set_yyyymmdd(id_birthday, '1986','07','27')
-        self.browser.fill_text(id_contact_name, 'Kelly Huang')
-        self.browser.fill_text(id_contact_tel, '0918-523-188')
+
+        # leader
+        self._fill_member_detail(0, dict_id, self.lst_mem)
 
     def fill_form_leader(self, id_tab_leader):
         id_leader = 'ContentPlaceHolder1_copyapply'
@@ -258,54 +260,85 @@ class ParkAuto:
         print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
         self.browser.handle_alert_popup()
 
-        id_name = 'ContentPlaceHolder1_lisMem_member_name_'
-        id_tel = 'ContentPlaceHolder1_lisMem_member_tel_'
-        id_contry = 'ContentPlaceHolder1_lisMem_ddlmember_country_'
-        id_city = 'ContentPlaceHolder1_lisMem_ddlmember_city_'
-        id_address = 'ContentPlaceHolder1_lisMem_member_addr_'
-        id_mobile = 'ContentPlaceHolder1_lisMem_member_mobile_'
-        id_email = 'ContentPlaceHolder1_lisMem_member_email_'
-        id_pid_nation ='ContentPlaceHolder1_lisMem_member_nation_'
-        id_pid_num = 'ContentPlaceHolder1_lisMem_member_sid_'
-        id_sex = 'ContentPlaceHolder1_lisMem_member_sex_'
-        id_birthday = 'ContentPlaceHolder1_lisMem_member_birthday_'
-        id_contact_name = 'ContentPlaceHolder1_lisMem_member_contactname_'
-        id_contact_tel = 'ContentPlaceHolder1_lisMem_member_contacttel_'
+        dict_id={}
+        dict_id['id_name'] = 'ContentPlaceHolder1_lisMem_member_name_'
+        dict_id['id_tel'] = 'ContentPlaceHolder1_lisMem_member_tel_'
+        dict_id['id_contry'] = 'ContentPlaceHolder1_lisMem_ddlmember_country_'
+        dict_id['id_city'] = 'ContentPlaceHolder1_lisMem_ddlmember_city_'
+        dict_id['id_address'] = 'ContentPlaceHolder1_lisMem_member_addr_'
+        dict_id['id_mobile'] = 'ContentPlaceHolder1_lisMem_member_mobile_'
+        dict_id['id_email'] = 'ContentPlaceHolder1_lisMem_member_email_'
+        dict_id['id_pid_nation'] = 'ContentPlaceHolder1_lisMem_member_nation_'
+        dict_id['id_pid_num'] = 'ContentPlaceHolder1_lisMem_member_sid_'
+        dict_id['id_sex'] = 'ContentPlaceHolder1_lisMem_member_sex_'
+        dict_id['id_birthday'] = 'ContentPlaceHolder1_lisMem_member_birthday_'
+        dict_id['id_contact_name'] = 'ContentPlaceHolder1_lisMem_member_contactname_'
+        dict_id['id_contact_tel'] = 'id_contact_tel'
 
-        for i in range(0, self.dict_team['member_count']):
-            self.browser.fill_text(id_name+str(i), 'Sloss Husang')
-            self.browser.fill_text(id_tel+str(i), '0933553288') # 電話
-            self.browser.fill_text(id_contry+str(i), '台北市') # contry
-            self.browser.fill_text(id_city+str(i), '北投區') # city
-            self.browser.fill_text(id_address+str(i), 'xx 路 1 弄 11 號') # address
-            self.browser.fill_text(id_mobile+str(i), '0933553288') # mobile
-            self.browser.fill_text(id_email+str(i), 'sloss_huang@gmail.com') # email
-            self.browser.fill_text(id_pid_nation+str(i), '中華民國')
-            self.browser.fill_text(id_pid_num+str(i), 'A100987638')
-            self.browser.fill_text(id_sex+str(i), '女')
-            self.browser.set_yyyymmdd(id_birthday+str(i), '1986','07','27')
-            self.browser.fill_text(id_contact_name+str(i), 'Kelly Huang')
-            self.browser.fill_text(id_contact_tel+str(i), '0918-523-188')
-
+        lst_mem = self.lst_mem
+        for i in range(1, len(lst_mem)):
+            self._fill_member_detail(i, dict_id, lst_mem)
+            
+    def _fill_member_detail(self, i, dict_id, lst_mem):
+        if i == 0:
+            strIdx = ''
+        else:
+            strIdx = str(i)
+        self.browser.fill_text(dict_id['id_name']+strIdx, lst_mem[i]['id_name'])
+        self.browser.fill_text(dict_id['id_tel']+strIdx, lst_mem[i]['id_tel']) # 電話
+        self.browser.fill_text(dict_id['id_contry']+strIdx, lst_mem[i]['id_contry']) # contry
+        self.browser.fill_text(dict_id['id_city']+strIdx, lst_mem[i]['id_city']) # city
+        self.browser.fill_text(dict_id['id_address']+strIdx, lst_mem[i]['id_address']) # address
+        self.browser.fill_text(dict_id['id_mobile']+strIdx, lst_mem[i]['id_mobile']) # mobile
+        if  i == 0:
+            self.browser.fill_text(dict_id['id_fax']+strIdx, lst_mem[i]['id_fax'])
+        self.browser.fill_text(dict_id['id_email']+strIdx, lst_mem[i]['id_email']) # email
+        self.browser.fill_text(dict_id['id_pid_nation']+strIdx, lst_mem[i]['id_pid_nation'])
+        self.browser.fill_text(dict_id['id_pid_num']+strIdx, lst_mem[i]['id_pid_num'])
+        self.browser.fill_text(dict_id['id_sex']+strIdx, lst_mem[i]['id_sex'])
+        self.browser.set_yyyymmdd(dict_id['id_birthday']+strIdx, lst_mem[i]['id_birthday_yyyy'],lst_mem[i]['id_birthday_mm'],lst_mem[i]['id_birthday_dd'])
+        self.browser.fill_text(dict_id['id_contact_name']+strIdx, lst_mem[i]['id_contact_name'])
+        self.browser.fill_text(dict_id['id_contact_tel']+strIdx, lst_mem[i]['id_contact_tel'])
 
     def fill_form_keeper(self, id_tab_keeper):
         self.browser.click_id(id_tab_keeper)
 
+def read_member_list(strFile):
+    import pandas as pd
+    from pandas import ExcelWriter
+    from pandas import ExcelFile
+    
+    df = pd.read_excel('sample.xlsx', sheet_name='Sheet1')
+    #print("Column headings:")
+    #print(df.columns)
+
+    list_person = []
+    for i in df.index:
+        dict_person = {}
+        for key in df.columns:
+            dict_person[key] = df[key][i]
+        list_person.append(dict_person)
+        #print('one person = ', dict_person)  
+
+    return list_person
 
 
 def init_arg():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--park', type=int, default = 0, help="National Park (0: YUSHAN NATIONAL PARK, 1: TAROKO NATIONAL PARK, 2: SHEI-PA NATIONAL PARK")
+    parser.add_argument('-p', '--park', type=int, default = 2, help="National Park (0: YUSHAN NATIONAL PARK, 1: TAROKO NATIONAL PARK, 2: SHEI-PA NATIONAL PARK")
+    parser.add_argument('-list', '--memberlist', default = 'sample.xlsx', help='sample.xlsx')
 
     args = parser.parse_args()
-    print("args.park =", args.park)
-    return 1, {'park':args.park}
+    #print("args.park =", args.park)
+    return 1, {'park':args.park, 'memberlist':args.memberlist}
 
 
 def main():
     bValid, dict_arg = init_arg()
 
-    obj_auto = ParkAuto(dict_arg['park'], 3)
+    lst_mem = read_member_list(dict_arg['memberlist'])
+
+    obj_auto = ParkAuto(dict_arg['park'], lst_mem)
     obj_auto.run()
     
 
