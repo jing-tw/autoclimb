@@ -49,7 +49,6 @@ class BrowserAuto:
                 if cnt > self.MAX_WAIT_CNT:
                     print('Error: cnt > self.MAX_WAIT_CNT') 
                     bRun = False
-                time.sleep(self.WAIT_SEC) 
                 element = self._get_elm_id(strID)
                 #self.scroll_to_element(element)
                 element.click()
@@ -68,7 +67,6 @@ class BrowserAuto:
                     print('Error: cnt > self.MAX_WAIT_CNT') 
                     bRun = False
                 # fill_text
-                time.sleep(self.WAIT_SEC) 
                 element = self._get_elm_id(strID)
                 self.scroll_to_element(element)
                 element.send_keys(strText)
@@ -101,6 +99,23 @@ class BrowserAuto:
                 cnt = cnt + 1
     
     def set_yyyymmdd(self, strID, yyyy, mm, date):
+        bRun = True
+        cnt = 0
+        while bRun:
+            try:
+                if cnt > self.MAX_WAIT_CNT:
+                    print('Error: cnt > self.MAX_WAIT_CNT') 
+                    bRun = False
+                # set_yyyymmdd
+                self._set_yyyymmdd(strID, yyyy, mm, date)
+                # end of set_yyyymmdd
+                bRun = False
+            except (selenium.common.exceptions.StaleElementReferenceException, selenium.common.exceptions.NoSuchElementException, selenium.common.exceptions.ElementNotInteractableException) as err:
+                print('Exception: ', err)
+                print('Wait and try again')
+                cnt = cnt + 1
+
+    def _set_yyyymmdd(self, strID, yyyy, mm, date):
         self.click_id(strID)
         time.sleep(self.WAIT_SEC)
         element = self.driver.find_element_by_class_name('ui-datepicker-year')
@@ -140,6 +155,7 @@ class BrowserAuto:
         from selenium.webdriver.support.ui import WebDriverWait
         from selenium.webdriver.support import expected_conditions as EC
 
+        time.sleep(self.WAIT_SEC) 
         element = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, strID)) and 
             EC.element_to_be_clickable((By.ID, strID))
