@@ -3,6 +3,10 @@ import argparse
 
 from park_auto import ParkAuto
 
+DEFAULT_GUI = 1
+DEFAULT_PARK = 2
+DEFAULT_MEMBERLIST = 'sample.xlsx'
+
 
 def read_member_list(strFile):
     import pandas as pd
@@ -34,27 +38,45 @@ def read_member_list(strFile):
 import sys
 import random
 from PySide2 import QtCore, QtWidgets, QtGui
+
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        self.hello = ["Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
+        self.bt_run = QtWidgets.QPushButton("Run!")
+        self.bt_load_memlst= QtWidgets.QPushButton("Load Member List")
 
-        self.button = QtWidgets.QPushButton("Click me!")
-        self.text = QtWidgets.QLabel("Hello World")
-        self.text.setAlignment(QtCore.Qt.AlignCenter)
+        self.text_status = QtWidgets.QLabel("Status")
+        self.text_status.setAlignment(QtCore.Qt.AlignCenter)
 
         self.layout = QtWidgets.QVBoxLayout()
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
+        self.layout.addWidget(self.text_status)
+        self.layout.addWidget(self.bt_load_memlst)
+        self.layout.addWidget(self.bt_run)
+        
+        
+
         self.setLayout(self.layout)
 
-        self.button.clicked.connect(self.magic)
+        self.bt_run.clicked.connect(self.run)
+        self.bt_load_memlst.clicked.connect(self.load_memlst)
 
+        self.dict_arg = {}
+        self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
+        self.dict_arg['park'] = DEFAULT_PARK
 
-    def magic(self):
-        self.text.setText(random.choice(self.hello))
+    def run(self):
+        print('run')
+        lst_mem = read_member_list(self.dict_arg['memberlist'])
+        obj_auto = ParkAuto(self.dict_arg['park'], lst_mem)
+        obj_auto.run()
 
+    def load_memlst(self):
+        print('load')
+        fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Member Data', '.', selectedFilter='*.xlsx')
+        if fileName:
+            print(fileName[0])
+            self.dict_arg['memberlist'] = fileName[0]
 
 
 
@@ -62,9 +84,9 @@ class MyWidget(QtWidgets.QWidget):
 
 def init_arg():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-gui', '--gui', type=int, default = 1, help="Enable GUI mode")
-    parser.add_argument('-p', '--park', type=int, default = 2, help="National Park (0: YUSHAN NATIONAL PARK, 1: TAROKO NATIONAL PARK, 2: SHEI-PA NATIONAL PARK")
-    parser.add_argument('-list', '--memberlist', default = 'sample.xlsx', help='sample.xlsx')
+    parser.add_argument('-gui', '--gui', type=int, default = DEFAULT_GUI, help="Enable GUI mode")
+    parser.add_argument('-p', '--park', type=int, default = DEFAULT_PARK, help="National Park (0: YUSHAN NATIONAL PARK, 1: TAROKO NATIONAL PARK, 2: SHEI-PA NATIONAL PARK")
+    parser.add_argument('-list', '--memberlist', default = DEFAULT_MEMBERLIST, help='sample.xlsx')
 
     args = parser.parse_args()
     #print("args.park =", args.park)
