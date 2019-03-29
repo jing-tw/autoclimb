@@ -6,7 +6,7 @@ from selenium.webdriver.common.action_chains import ActionChains   # for auto sc
 import argparse
 
 class BrowserAuto:
-    WAIT_SEC = 0.2
+    WAIT_SEC = 0.4
     MAX_WAIT_CNT = 500
 
     def __init__(self, addr_park):
@@ -22,11 +22,24 @@ class BrowserAuto:
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
     def click(self, strTitle):
-        str_comm = '//*[@title="' + strTitle + '"]'
-        element = self.driver.find_element_by_xpath(str_comm)
-        self.scroll_to_element(element)
-        element.click()
 
+        bRun = True
+        cnt = 0
+        while bRun:
+            try:
+                if cnt > self.MAX_WAIT_CNT:
+                    print('Error: cnt > self.MAX_WAIT_CNT') 
+                    bRun = False
+                time.sleep(self.WAIT_SEC) 
+                str_comm = '//*[@title="' + strTitle + '"]'
+                element = self.driver.find_element_by_xpath(str_comm)
+                self.scroll_to_element(element)
+                element.click()
+                bRun = False
+            except (selenium.common.exceptions.StaleElementReferenceException, selenium.common.exceptions.NoSuchElementException, selenium.common.exceptions.ElementNotInteractableException) as err:
+                print('Exception: ', err)
+                print('Wait and try again')
+                cnt = cnt + 1
 
     def click_id(self, strID):
         bRun = True
@@ -41,7 +54,7 @@ class BrowserAuto:
                 #self.scroll_to_element(element)
                 element.click()
                 bRun = False
-            except selenium.common.exceptions.StaleElementReferenceException as err:
+            except (selenium.common.exceptions.StaleElementReferenceException, selenium.common.exceptions.NoSuchElementException, selenium.common.exceptions.ElementNotInteractableException) as err:
                 print('Exception: ', err)
                 print('Wait and try again')
                 cnt = cnt + 1
@@ -82,7 +95,7 @@ class BrowserAuto:
                 sele.select_by_index(inx)
                 # end of select
                 bRun = False
-            except selenium.common.exceptions.StaleElementReferenceException as err:
+            except (selenium.common.exceptions.StaleElementReferenceException, selenium.common.exceptions.NoSuchElementException, selenium.common.exceptions.ElementNotInteractableException) as err:
                 print('Exception: ', err)
                 print('Wait and try again')
                 cnt = cnt + 1
@@ -133,19 +146,6 @@ class BrowserAuto:
         )
         
         return element
-        
-
-        '''
-        def find(driver):
-            element = driver.find_elements_by_id(strID)
-            if element:
-                return element
-            else:
-                return False
-        element = WebDriverWait(self.driver, 10).until(find)
-        '''
-
-
 class ParkAuto:
     name_park = {}
     addr_park = 'https://npm.cpami.gov.tw/apply_1.aspx'
@@ -174,8 +174,6 @@ class ParkAuto:
 
         # member list
         self.lst_mem = lst_mem
-
-        
         
     def run(self):
         self.browser = BrowserAuto(self.addr_park)
@@ -229,8 +227,6 @@ class ParkAuto:
         self.fill_form_leader(self.id_tab_leader)
         self.fill_form_member(self.id_tab_member)
         #self.fill_form_keeper(self.id_tab_keeper)
-
-
 
     def fill_form_schedule(self, id_tab_schedule):
         dict_team = self.dict_team
