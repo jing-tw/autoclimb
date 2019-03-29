@@ -192,6 +192,7 @@ class ParkAuto:
         self.browser.click_id('ContentPlaceHolder1_btnagree')
 
     def _Yushan(self):
+        self.curPark = 'Yushan'
         self.browser.click('玉山國家公園')
         self.ok()
 
@@ -203,6 +204,7 @@ class ParkAuto:
         self.fill_form_keeper(self.id_tab_keeper)
 
     def _Taroko(self):
+        self.curPark = 'Taroko'
         self.browser.click('太魯閣國家公園')
         self.browser.click_id('chk[]10') # 確認已於申請前詳閱並明瞭「 錐麓古道入園收費須知」，現場購票與入園查核時間每日上午7時~上午10時止，並轉知全體隊員
         self.ok()
@@ -215,6 +217,7 @@ class ParkAuto:
         self.fill_form_keeper(self.id_tab_keeper)
 
     def _Sheipa(self):
+        self.curPark = 'Sheipa'
         self.browser.click('雪霸國家公園')
         self.browser.click_id('chk[]0') # 請申請人瞭解所填具之隊員資料與行程計畫等，如明知為不實或冒用他人資料填載入園申請之事項，將渉犯刑法第210條偽造文書罪嫌，或刑法第214條使公務員登載不實罪嫌，本處將依法先予以退件處理，並立即將申請人停權處分，另將涉案相關資料向司法機關依法告發
         self.browser.click_id('chk[]9') # 攀登路線如為B、C、C+級者，申請人及領隊應確認全體隊員均分別符合A、B、C級登山經驗能力才能申請，雪季期間另依公告辦理。
@@ -234,7 +237,8 @@ class ParkAuto:
         # 路線行程規劃
         self.browser.click_id(id_tab_schedule)
         
-        self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name']) # 隊名
+        if self.curPark != 'Taroko':
+            self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name']) # 隊名
         self.browser.select_inx('ContentPlaceHolder1_climblinemain', dict_team['climbline_main_idx']) # 主路線
         self.browser.select_inx('ContentPlaceHolder1_climbline', dict_team['climbline_sub_idx']) #次路線
         self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數
