@@ -331,7 +331,7 @@ def read_member_list(strFile):
     from pandas import ExcelWriter
     from pandas import ExcelFile
     
-    df = pd.read_excel('sample.xlsx', sheet_name='member')
+    df = pd.read_excel('sample.xlsx', sheet_name='member', dtype='str')
     #print("Column headings:")
     #print(df.columns)
 
