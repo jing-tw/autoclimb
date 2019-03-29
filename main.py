@@ -66,19 +66,6 @@ class BrowserAuto:
                 print('Wait and try again')
                 cnt = cnt + 1
 
-        '''
-        try:
-            time.sleep(self.WAIT_SEC) 
-            element = self._get_elm_id(strID)
-            self.scroll_to_element(element)
-            element.send_keys(strText)
-        except selenium.common.exceptions.NoSuchElementException as reason:
-            print('Exception:')
-            print('strText = ', strText)
-            print('reason = ', reason)
-            print('result = , Keep going.')
-        '''
-
     def select_inx(self, strID, inx):
         bRun = True
         cnt = 0
