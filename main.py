@@ -43,23 +43,32 @@ class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
+        
+
         self.bt_run = QtWidgets.QPushButton("Run!")
         self.bt_load_memlst= QtWidgets.QPushButton("Load Member List")
 
         self.text_status = QtWidgets.QLabel("Status")
         self.text_status.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.layout = QtWidgets.QVBoxLayout()
+        box_v = QtWidgets.QVBoxLayout()
+        box_v.addStretch(1)
+        box_v.addWidget(self.bt_load_memlst)
+        box_v.addWidget(self.bt_run)
+
+        self.layout = QtWidgets.QHBoxLayout()
         self.layout.addWidget(self.text_status)
-        self.layout.addWidget(self.bt_load_memlst)
-        self.layout.addWidget(self.bt_run)
-        
+        self.layout.addLayout(box_v)
         
 
         self.setLayout(self.layout)
 
         self.bt_run.clicked.connect(self.run)
         self.bt_load_memlst.clicked.connect(self.load_memlst)
+
+        
+        # self.resize(300, 100)
+        # self.show()
 
         self.dict_arg = {}
         self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
