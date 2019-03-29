@@ -5,7 +5,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains   # for auto scroll
 
 class BrowserAuto:
-    WAIT_SEC_DEFAULT = 1
+    SPEED_DEFAULT = 1  # wait sec
     MAX_WAIT_CNT = 500
 
     def __init__(self, addr_park):
@@ -20,8 +20,8 @@ class BrowserAuto:
         self.speed_init()
         
     def speed_init(self):
-        self.WAIT_SEC = self.WAIT_SEC_DEFAULT
-        self.WAIT_SEC_CALENDAR = self.WAIT_SEC_DEFAULT
+        self.WAIT_SEC = self.SPEED_DEFAULT
+        self.WAIT_SEC_CALENDAR = self.SPEED_DEFAULT
 
     def speed_up(self):
         self.WAIT_SEC = 0.05
