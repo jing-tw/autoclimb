@@ -253,7 +253,7 @@ class ParkAuto:
         dict_id={}
         dict_id['id_name'] = 'ContentPlaceHolder1_apply_name'
         dict_id['id_tel'] = 'ContentPlaceHolder1_apply_tel'
-        dict_id['id_contry'] = 'ContentPlaceHolder1_ddlapply_country'
+        dict_id['id_country'] = 'ContentPlaceHolder1_ddlapply_country'
         dict_id['id_city'] = 'ContentPlaceHolder1_ddlapply_city'
         dict_id['id_address'] = 'ContentPlaceHolder1_apply_addr'
         dict_id['id_mobile'] = 'ContentPlaceHolder1_apply_mobile'
@@ -286,7 +286,7 @@ class ParkAuto:
         dict_id={}
         dict_id['id_name'] = 'ContentPlaceHolder1_lisMem_member_name'
         dict_id['id_tel'] = 'ContentPlaceHolder1_lisMem_member_tel'
-        dict_id['id_contry'] = 'ContentPlaceHolder1_lisMem_ddlmember_country'
+        dict_id['id_country'] = 'ContentPlaceHolder1_lisMem_ddlmember_country'
         dict_id['id_city'] = 'ContentPlaceHolder1_lisMem_ddlmember_city'
         dict_id['id_address'] = 'ContentPlaceHolder1_lisMem_member_addr'
         dict_id['id_mobile'] = 'ContentPlaceHolder1_lisMem_member_mobile'
@@ -309,7 +309,7 @@ class ParkAuto:
             strIdx = '_' + str(i - 1)
         self.browser.fill_text(dict_id['id_name']+strIdx, lst_mem[i]['id_name'])
         self.browser.fill_text(dict_id['id_tel']+strIdx, lst_mem[i]['id_tel']) # 電話
-        self.browser.fill_text(dict_id['id_contry']+strIdx, lst_mem[i]['id_contry']) # contry
+        self.browser.fill_text(dict_id['id_country']+strIdx, lst_mem[i]['id_country']) # contry
         self.browser.fill_text(dict_id['id_city']+strIdx, lst_mem[i]['id_city']) # city
         self.browser.fill_text(dict_id['id_address']+strIdx, lst_mem[i]['id_address']) # address
         self.browser.fill_text(dict_id['id_mobile']+strIdx, lst_mem[i]['id_mobile']) # mobile
@@ -331,7 +331,7 @@ def read_member_list(strFile):
     from pandas import ExcelWriter
     from pandas import ExcelFile
     
-    df = pd.read_excel('sample.xlsx', sheet_name='Sheet1')
+    df = pd.read_excel('sample.xlsx', sheet_name='member')
     #print("Column headings:")
     #print(df.columns)
 
