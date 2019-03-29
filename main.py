@@ -160,6 +160,7 @@ class ParkAuto:
             self._fill_member_detail(i, dict_id, lst_mem)
             
     def _fill_member_detail(self, i, dict_id, lst_mem):
+        self.browser.speed_up()
         if i == 0:
             strIdx = ''
         else:
@@ -179,6 +180,7 @@ class ParkAuto:
         self.browser.set_yyyymmdd(dict_id['id_birthday']+strIdx, lst_mem[i]['id_birthday_yyyy'],lst_mem[i]['id_birthday_mm'],lst_mem[i]['id_birthday_dd'])
         self.browser.fill_text(dict_id['id_contact_name']+strIdx, lst_mem[i]['id_contact_name'])
         self.browser.fill_text(dict_id['id_contact_tel']+strIdx, lst_mem[i]['id_contact_tel'])
+        self.browser.speed_init()
 
     def fill_form_keeper(self, id_tab_keeper):
         self.browser.click_id(id_tab_keeper)

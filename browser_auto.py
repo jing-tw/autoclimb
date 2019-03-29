@@ -5,7 +5,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains   # for auto scroll
 
 class BrowserAuto:
-    WAIT_SEC = 0.4
+    WAIT_SEC_DEFAULT = 1
     MAX_WAIT_CNT = 500
 
     def __init__(self, addr_park):
@@ -17,6 +17,15 @@ class BrowserAuto:
         self.driver.get(self.addr_park)
         self.driver.implicitly_wait(10)
 
+        self.speed_init()
+        
+    def speed_init(self):
+        self.WAIT_SEC = self.WAIT_SEC_DEFAULT
+        self.WAIT_SEC_CALENDAR = self.WAIT_SEC_DEFAULT
+
+    def speed_up(self):
+        self.WAIT_SEC = 0.05
+    
     def scroll_to_element(self, element):
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
@@ -97,12 +106,12 @@ class BrowserAuto:
         date = dict_arg['date']
 
         self.click_id(strID)
-        time.sleep(self.WAIT_SEC)
+        time.sleep(self.WAIT_SEC_CALENDAR)
         element = self.driver.find_element_by_class_name('ui-datepicker-year')
         sele = Select(element)
         sele.select_by_index(int(yyyy)-1929)  # 0: 1929
         
-        time.sleep(self.WAIT_SEC)
+        time.sleep(self.WAIT_SEC_CALENDAR)
         element = self.driver.find_element_by_class_name('ui-datepicker-month')
         sele = Select(element)
         sele.select_by_index(int(mm)-1)  # 0: 一月
@@ -135,7 +144,6 @@ class BrowserAuto:
         from selenium.webdriver.support.ui import WebDriverWait
         from selenium.webdriver.support import expected_conditions as EC
 
-        # time.sleep(self.WAIT_SEC) 
         element = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, strID)) and 
             EC.element_to_be_clickable((By.ID, strID))
