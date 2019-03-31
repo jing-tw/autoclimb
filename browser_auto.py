@@ -3,6 +3,7 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains   # for auto scroll
+from webdriver_manager.chrome import ChromeDriverManager
 
 class BrowserAuto:
     SPEED_DEFAULT = 1  # wait sec
@@ -13,8 +14,8 @@ class BrowserAuto:
         options = webdriver.ChromeOptions()
         options.add_argument('--start-maximized')
         # self.driver = webdriver.Chrome(chrome_options=options)
-        self.driver = webdriver.Chrome()
-        self.driver.get(self.addr_park)
+        # self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
         self.driver.implicitly_wait(10)
 
         self.speed_init()
