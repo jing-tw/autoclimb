@@ -1,13 +1,10 @@
-# climbing
+# 台灣國家公園入山入園證- 登山成員名單自動填表工具
 
-# How to download the chrome web driver
-- step 1: Download the webdriver
-   https://sites.google.com/a/chromium.org/chromedriver/getting-started
+## 成員資料檔
+sample.xls
 
-- step 2: extract to the app folder
+## 命令列執行
+python main.py -gui 0
 
-- step 3: setup the path
-    export PATH=.:${PATH}
-    
-- step 3: run test
-   python test.py
+## 視窗執行
+python main.py
