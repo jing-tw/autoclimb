@@ -39,36 +39,37 @@ class ParkAuto:
         }
         switch[self.park]()
 
-        time.sleep(10) # Let the user actually see something!
+        #time.sleep(10) # Let the user actually see something!
 
     def ok(self):
         self.browser.click_id('chk[]')  # 本人已閱讀並充分瞭解上述注意事項，並會遵守國家公園各項規定
         self.browser.click_id('ContentPlaceHolder1_btnagree')
 
-    def _Yushan(self):
-        self.curPark = 'Yushan'
-        self.browser.click('玉山國家公園')
-        self.ok()
+    def run_fill_form_member(self):
+        self.fill_form_member(self.id_tab_member)
 
+    def apply(self):
         # 入園線上申請
         self.fill_form_schedule(self.id_tab_schedule)
         self.fill_form_applyer(self.id_tab_applyer)
         self.fill_form_leader(self.id_tab_leader)
-        self.fill_form_member(self.id_tab_member)
-        self.fill_form_keeper(self.id_tab_keeper)
+
+        print('apply')
+        self.run_fill_form_member()
+        #self.fill_form_keeper(self.id_tab_keeper)
+
+    def _Yushan(self):
+        self.curPark = 'Yushan'
+        self.browser.click('玉山國家公園')
+        self.ok()
+        self.apply()
 
     def _Taroko(self):
         self.curPark = 'Taroko'
         self.browser.click('太魯閣國家公園')
         self.browser.click_id('chk[]10') # 確認已於申請前詳閱並明瞭「 錐麓古道入園收費須知」，現場購票與入園查核時間每日上午7時~上午10時止，並轉知全體隊員
         self.ok()
-
-        # 入園線上申請
-        self.fill_form_schedule(self.id_tab_schedule)
-        self.fill_form_applyer(self.id_tab_applyer)
-        self.fill_form_leader(self.id_tab_leader)
-        self.fill_form_member(self.id_tab_member)
-        self.fill_form_keeper(self.id_tab_keeper)
+        self.apply()
 
     def _Sheipa(self):
         self.curPark = 'Sheipa'
@@ -76,13 +77,7 @@ class ParkAuto:
         self.browser.click_id('chk[]0') # 請申請人瞭解所填具之隊員資料與行程計畫等，如明知為不實或冒用他人資料填載入園申請之事項，將渉犯刑法第210條偽造文書罪嫌，或刑法第214條使公務員登載不實罪嫌，本處將依法先予以退件處理，並立即將申請人停權處分，另將涉案相關資料向司法機關依法告發
         self.browser.click_id('chk[]9') # 攀登路線如為B、C、C+級者，申請人及領隊應確認全體隊員均分別符合A、B、C級登山經驗能力才能申請，雪季期間另依公告辦理。
         self.ok()
-
-        # 入園線上申請
-        self.fill_form_schedule(self.id_tab_schedule)
-        self.fill_form_applyer(self.id_tab_applyer)
-        self.fill_form_leader(self.id_tab_leader)
-        self.fill_form_member(self.id_tab_member)
-        #self.fill_form_keeper(self.id_tab_keeper)
+        self.apply()
 
     def fill_form_schedule(self, id_tab_schedule):
         dict_team = self.dict_team

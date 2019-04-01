@@ -37,6 +37,7 @@ def read_member_list(strFile):
 
 import sys
 import random
+from PySide2.QtWidgets import (QApplication, QLabel, QPushButton, QVBoxLayout, QWidget)
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QAbstractButton
 from PySide2.QtGui import QPixmap, QPainter
@@ -76,35 +77,50 @@ class PicButton(QAbstractButton):
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-        
+        # auto park object
+        self.obj_auto = None
+
         # add button
         self.bt_yushan = PicButton(QPixmap('./res/img/Yushan.png'))
         self.bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
         self.bt_sheipa = PicButton(QPixmap('./res/img/Sheipa.png'))
+        self.bt_fill_member = QPushButton('填入成員資料')
 
         # add status label
         self.text_status = QtWidgets.QLabel("Status")
         self.text_status.setAlignment(QtCore.Qt.AlignCenter)
 
-        # layout
+        # layout: upper
         box_button = QtWidgets.QHBoxLayout()
         box_button.addStretch(1)
         box_button.addWidget(self.bt_yushan)
         box_button.addWidget(self.bt_taroko)
         box_button.addWidget(self.bt_sheipa)
+        # layouer: middle
+        box_button2 = QtWidgets.QHBoxLayout()
+        box_button2.addStretch(1)
+        box_button2.addWidget(self.bt_fill_member)
+        self.bt_fill_member.setVisible(False)
 
+        
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addLayout(box_button)
+        self.layout.addLayout(box_button2)
         self.layout.addWidget(self.text_status)
         self.setLayout(self.layout)
 
         self.bt_yushan.clicked.connect(self.run_yushan)
         self.bt_taroko.clicked.connect(self.run_taroko)
         self.bt_sheipa.clicked.connect(self.run_sheipa)
+        self.bt_fill_member.clicked.connect(self.run_fill_member) # re-fill the member data
 
         self.dict_arg = {}
         self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
         self.dict_arg['park'] = DEFAULT_PARK
+
+    def run_fill_member(self):
+        if self.obj_auto != None:
+            self.obj_auto.run_fill_form_member()
 
     def run_yushan(self):
         print('run')
@@ -124,8 +140,12 @@ class MyWidget(QtWidgets.QWidget):
     def run(self):
         self.load_memlst()
         lst_mem = read_member_list(self.dict_arg['memberlist'])
-        obj_auto = ParkAuto(self.dict_arg['park'], lst_mem)
-        obj_auto.run()
+        self.obj_auto = ParkAuto(self.dict_arg['park'], lst_mem)
+        self.obj_auto.run()
+        self.show()
+
+        # show re-fill member button only when obj_auto_run exist
+        self.bt_fill_member.setVisible(True)
     
 
     def load_memlst(self):
