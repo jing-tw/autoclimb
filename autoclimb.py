@@ -81,7 +81,6 @@ class MyWidget(QtWidgets.QWidget):
         self.bt_yushan = PicButton(QPixmap('./res/img/Yushan.png'))
         self.bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
         self.bt_sheipa = PicButton(QPixmap('./res/img/Sheipa.png'))
-        # self.bt_load_memlst= QtWidgets.QPushButton("Load Member List")
 
         # add status label
         self.text_status = QtWidgets.QLabel("Status")
@@ -90,24 +89,18 @@ class MyWidget(QtWidgets.QWidget):
         # layout
         box_button = QtWidgets.QHBoxLayout()
         box_button.addStretch(1)
-        #box_button.addWidget(self.bt_load_memlst)
         box_button.addWidget(self.bt_yushan)
         box_button.addWidget(self.bt_taroko)
         box_button.addWidget(self.bt_sheipa)
 
-        self.layout = QtWidgets.QHBoxLayout()
-        self.layout.addWidget(self.text_status)
+        self.layout = QtWidgets.QVBoxLayout()
         self.layout.addLayout(box_button)
+        self.layout.addWidget(self.text_status)
         self.setLayout(self.layout)
 
         self.bt_yushan.clicked.connect(self.run_yushan)
         self.bt_taroko.clicked.connect(self.run_taroko)
         self.bt_sheipa.clicked.connect(self.run_sheipa)
-        # self.bt_load_memlst.clicked.connect(self.load_memlst)
-
-        
-        # self.resize(300, 100)
-        # self.show()
 
         self.dict_arg = {}
         self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
@@ -142,10 +135,6 @@ class MyWidget(QtWidgets.QWidget):
             print(fileName[0])
             self.dict_arg['memberlist'] = fileName[0]
 
-
-
-
-
 def init_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('-gui', '--gui', type=int, default = DEFAULT_GUI, help="Enable GUI mode")
@@ -166,7 +155,6 @@ def main():
     else:
         app = QtWidgets.QApplication([])
         widget = MyWidget()
-        widget.resize(800, 600)
         widget.show()
         sys.exit(app.exec_())
 
