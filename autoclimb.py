@@ -45,10 +45,29 @@ class PicButton(QAbstractButton):
     def __init__(self, pixmap, parent=None):
         super(PicButton, self).__init__(parent)
         self.pixmap = pixmap
+        self.enter = False
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(event.rect(), self.pixmap)
+
+        if self.enter:
+            qp = QtGui.QPainter()
+            qp.begin(self)
+            self.drawRectangles(qp, event.rect())
+            qp.end()
+
+    def drawRectangles(self, qp, rec):
+        qp.setBrush(QtGui.QColor(000, 000, 255, 255/4))
+        qp.drawRect(rec.left(), rec.top(), rec.width(), rec.height())
+
+    def enterEvent(self, event):
+        self.enter = True
+        self.update()
+
+    def leaveEvent(self, event):
+        self.enter = False
+        self.update()
 
     def sizeHint(self):
         return self.pixmap.size()
@@ -57,17 +76,12 @@ class PicButton(QAbstractButton):
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-
         
         # add button
-        # self.bt_run = PicButton(QPixmap('./res/img/Yushan.png.png'))
-        self.bt_yushan = QtWidgets.QPushButton("Yushan")
-        self.bt_taroko = QtWidgets.QPushButton("Taroko")
-        self.bt_sheipa = QtWidgets.QPushButton("Sheipa")
+        self.bt_yushan = PicButton(QPixmap('./res/img/Yushan.png'))
+        self.bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
+        self.bt_sheipa = PicButton(QPixmap('./res/img/Sheipa.png'))
         # self.bt_load_memlst= QtWidgets.QPushButton("Load Member List")
-
-
-
 
         # add status label
         self.text_status = QtWidgets.QLabel("Status")
