@@ -15,15 +15,18 @@ sample.xlsx
 https://www.anaconda.com/distribution/
 ### Step 2: Install the package
   ```sh
-$ conda install -c conda-forge selenium, pyside2, xlrd, pandas
+  $ conda install -c conda-forge selenium, pyside2, xlrd, pandas
   $ pip install webdriver-manager
   ```
 
 ## 命令列執行
-python autoclimb.py -gui 0 -list sample.xlsx
-
+```sh
+$ python autoclimb.py -gui 0 -list sample.xlsx
+```
 ## 視窗執行
-python autoclimb.py
+```sh
+$ python autoclimb.py
+```
 
 ## task ##
 [![N|Solid](https://docs.google.com/spreadsheets/d/1zBzCCGJZ_3ZbQgUl_GSnXP8J3mQQUV7dGDGVw76bHoM/edit?usp=sharing)](https://docs.google.com/spreadsheets/d/1zBzCCGJZ_3ZbQgUl_GSnXP8J3mQQUV7dGDGVw76bHoM/edit?usp=sharing)
