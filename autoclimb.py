@@ -38,33 +38,58 @@ def read_member_list(strFile):
 import sys
 import random
 from PySide2 import QtCore, QtWidgets, QtGui
+from PySide2.QtWidgets import QAbstractButton
+from PySide2.QtGui import QPixmap, QPainter
+
+class PicButton(QAbstractButton):
+    def __init__(self, pixmap, parent=None):
+        super(PicButton, self).__init__(parent)
+        self.pixmap = pixmap
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawPixmap(event.rect(), self.pixmap)
+
+    def sizeHint(self):
+        return self.pixmap.size()
+
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
         
+        # add button
+        # self.bt_run = PicButton(QPixmap('./res/img/Yushan.png.png'))
+        self.bt_yushan = QtWidgets.QPushButton("Yushan")
+        self.bt_taroko = QtWidgets.QPushButton("Taroko")
+        self.bt_sheipa = QtWidgets.QPushButton("Sheipa")
+        # self.bt_load_memlst= QtWidgets.QPushButton("Load Member List")
 
-        self.bt_run = QtWidgets.QPushButton("Run!")
-        self.bt_load_memlst= QtWidgets.QPushButton("Load Member List")
 
+
+
+        # add status label
         self.text_status = QtWidgets.QLabel("Status")
         self.text_status.setAlignment(QtCore.Qt.AlignCenter)
 
-        box_v = QtWidgets.QVBoxLayout()
-        box_v.addStretch(1)
-        box_v.addWidget(self.bt_load_memlst)
-        box_v.addWidget(self.bt_run)
+        # layout
+        box_button = QtWidgets.QHBoxLayout()
+        box_button.addStretch(1)
+        #box_button.addWidget(self.bt_load_memlst)
+        box_button.addWidget(self.bt_yushan)
+        box_button.addWidget(self.bt_taroko)
+        box_button.addWidget(self.bt_sheipa)
 
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.addWidget(self.text_status)
-        self.layout.addLayout(box_v)
-        
-
+        self.layout.addLayout(box_button)
         self.setLayout(self.layout)
 
-        self.bt_run.clicked.connect(self.run)
-        self.bt_load_memlst.clicked.connect(self.load_memlst)
+        self.bt_yushan.clicked.connect(self.run_yushan)
+        self.bt_taroko.clicked.connect(self.run_taroko)
+        self.bt_sheipa.clicked.connect(self.run_sheipa)
+        # self.bt_load_memlst.clicked.connect(self.load_memlst)
 
         
         # self.resize(300, 100)
@@ -74,11 +99,27 @@ class MyWidget(QtWidgets.QWidget):
         self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
         self.dict_arg['park'] = DEFAULT_PARK
 
-    def run(self):
+    def run_yushan(self):
         print('run')
+        self.dict_arg['park'] = 0
+        self.run()
+
+    def run_taroko(self):
+        print('run')
+        self.dict_arg['park'] = 1
+        self.run()
+
+    def run_sheipa(self):
+        print('run')
+        self.dict_arg['park'] = 2
+        self.run()
+
+    def run(self):
+        self.load_memlst()
         lst_mem = read_member_list(self.dict_arg['memberlist'])
         obj_auto = ParkAuto(self.dict_arg['park'], lst_mem)
         obj_auto.run()
+    
 
     def load_memlst(self):
         print('load')
