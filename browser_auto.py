@@ -16,6 +16,7 @@ class BrowserAuto:
         # self.driver = webdriver.Chrome(chrome_options=options)
         # self.driver = webdriver.Chrome()
         self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        self.driver.get(self.addr_park)
         self.driver.implicitly_wait(10)
 
         self.speed_init()
