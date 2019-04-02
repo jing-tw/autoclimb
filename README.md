@@ -14,11 +14,22 @@ sample.xlsx
 ### Step 1: Insatll Anaconda
 https://www.anaconda.com/distribution/
 
-### Step 2: Install the packages
-  ```sh
-  $ conda install -c conda-forge selenium pyside2 xlrd pandas
-  $ pip install webdriver-manager
-  ```
+### Step 2: 設定環境
+```sh
+$ conda create --name venv_climbing python=3.6
+
+for Linux
+$ source activate venv_climbing
+
+for Windows
+> conda activate env_climbing
+```
+
+### Step 3: Install the packages
+```sh
+(venv_climbing) $ conda install -c conda-forge selenium pyside2 xlrd pandas
+(venv_climbing) $ pip install webdriver-manager
+```
 
 ## 執行
 ```sh
