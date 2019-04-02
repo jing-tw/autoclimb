@@ -58,7 +58,7 @@ class ParkAuto:
         self.fill_form_leader(self.id_tab_leader)
 
         print('apply')
-        # self.run_fill_form_member()
+        self.run_fill_form_member()
         self.fill_form_stay(self.id_tab_stay)
 
     def _Yushan(self):
