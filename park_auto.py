@@ -10,9 +10,9 @@ class ParkAuto:
     id_tab_applyer = 'ContentPlaceHolder1_menu1'
     id_tab_leader = 'ContentPlaceHolder1_menu2'
     id_tab_member = 'ContentPlaceHolder1_menu3'
-    id_tab_keeper = 'ContentPlaceHolder1_menu4'
+    id_tab_stay = 'ContentPlaceHolder1_menu4'
 
-    def __init__(self, park, lst_mem):
+    def __init__(self, park, lst_mem, lst_stay):
         print('Start Taiwan National Park Automation ')
         self.park = park
 
@@ -30,6 +30,9 @@ class ParkAuto:
 
         # member list
         self.lst_mem = lst_mem
+
+        # stay list
+        self.lst_stay = lst_stay
         
     def run(self):
         self.browser = BrowserAuto(self.addr_park)
@@ -55,8 +58,8 @@ class ParkAuto:
         self.fill_form_leader(self.id_tab_leader)
 
         print('apply')
-        self.run_fill_form_member()
-        #self.fill_form_keeper(self.id_tab_keeper)
+        # self.run_fill_form_member()
+        self.fill_form_stay(self.id_tab_stay)
 
     def _Yushan(self):
         self.curPark = 'Yushan'
@@ -176,5 +179,20 @@ class ParkAuto:
         self.browser.fill_text(dict_id['id_contact_tel']+strIdx, lst_mem[i]['id_contact_tel'])
         self.browser.speed_init()
 
-    def fill_form_keeper(self, id_tab_keeper):
-        self.browser.click_id(id_tab_keeper)
+    def fill_form_stay(self, id_tab_stay):
+        self.browser.click_id(id_tab_stay)
+
+        dict_id={}
+        pre = 'ContentPlaceHolder1' + '_stay'
+        dict_id['id_name'] = pre + '_name'
+        dict_id['id_tel'] = pre + '_tel'
+        dict_id['id_email'] = pre + '_email'
+
+        self.browser.speed_up()
+        lst_mem = self.lst_stay
+        i = 0
+        self.browser.fill_text(dict_id['id_name'], lst_mem[i]['id_name'])
+        self.browser.fill_text(dict_id['id_tel'], lst_mem[i]['id_tel']) # 電話
+        self.browser.fill_text(dict_id['id_email'], lst_mem[i]['id_email']) # email
+
+        self.browser.speed_init()

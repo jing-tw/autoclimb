@@ -1,40 +1,65 @@
 
 import argparse
-
 from park_auto import ParkAuto
 
 DEFAULT_GUI = 1
 DEFAULT_PARK = 2
 DEFAULT_MEMBERLIST = 'sample.xlsx'
 
-
-def read_member_list(strFile):
+def read_data_xlsx(filename, sheet):
     import pandas as pd
     from pandas import ExcelWriter
     from pandas import ExcelFile
     
-    df = pd.read_excel('sample.xlsx', sheet_name='member', dtype='str')
+    if filename.split('.')[1] == 'xlsx':
+        df = pd.read_excel(filename, sheet, dtype='str')
+    else:
+        return False, None
     #print("Column headings:")
     #print(df.columns)
 
-    list_person = []
+    list_data = []
     for i in df.index:
-        dict_person = {}
+        dict_data = {}
         for key in df.columns:
-            dict_person[key] = df[key][i]
-        list_person.append(dict_person)
+            dict_data[key] = df[key][i]
+        list_data.append(dict_data)
         #print('one person = ', dict_person)  
 
-    return list_person
+    return True, list_data
 
+def utl_read_data(filename):
+    print('read file ', filename)
+    def ret_error(title):
+        print('Error: ', title)
+        return False, None, None
 
+    obj_data = UserData(filename)
+    ok, lst_mem = obj_data.get_member_list()
+    if not ok:
+        return ret_error(' get_member_list failure')
+    if len(lst_mem) == 0:
+        return ret_error(' len(lst_mem) == 0')
 
+    ok, lst_stay = obj_data.get_stay_data()
+    if not ok:
+        return ret_error(' get_stay_data failure')
+    if len(lst_stay) == 0:
+        return ret_error(' len(lst_stay) == 0')
+        
+    
+    return True, lst_mem, lst_stay
 
+class UserData:
+    def __init__(self, filename):
+        self.filename = filename
 
+    def get_member_list(self):
+        return read_data_xlsx(self.filename, 'member')
 
-
-
-
+    def get_stay_data(self):
+        return read_data_xlsx(self.filename, 'stay')
+    
 import sys
 import random
 from PySide2.QtWidgets import (QApplication, QLabel, QPushButton, QVBoxLayout, QWidget)
@@ -72,7 +97,6 @@ class PicButton(QAbstractButton):
 
     def sizeHint(self):
         return self.pixmap.size()
-
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
@@ -139,15 +163,16 @@ class MyWidget(QtWidgets.QWidget):
 
     def run(self):
         self.load_memlst()
-        lst_mem = read_member_list(self.dict_arg['memberlist'])
-        self.obj_auto = ParkAuto(self.dict_arg['park'], lst_mem)
+        ok, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
+        if not ok: print('Error: utl_read_data failure'); return
+
+        self.obj_auto = ParkAuto(self.dict_arg['park'], lst_mem, lst_stay)
         self.obj_auto.run()
         self.show()
 
         # show re-fill member button only when obj_auto_run exist
         self.bt_fill_member.setVisible(True)
     
-
     def load_memlst(self):
         print('load')
         fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Member Data', '.', selectedFilter='*.xlsx')
@@ -165,12 +190,14 @@ def init_arg():
     #print("args.park =", args.park)
     return 1, {'park':args.park, 'memberlist':args.memberlist, 'gui': args.gui}
 
+
 def main():
     bValid, dict_arg = init_arg()
 
     if dict_arg['gui'] == 0:
-        lst_mem = read_member_list(dict_arg['memberlist'])
-        obj_auto = ParkAuto(dict_arg['park'], lst_mem)
+        ok, lst_mem, lst_stay = utl_read_data(dict_arg['memberlist'])
+        if not ok: print('Error: utl_read_data failure'); return
+        obj_auto = ParkAuto(dict_arg['park'], lst_mem, lst_stay)
         obj_auto.run()
     else:
         app = QtWidgets.QApplication([])
