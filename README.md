@@ -34,10 +34,17 @@ for Windows
 (venv_climbing) $ pip install webdriver-manager
 ```
 
+## 下載
+```sh
+$ git clone git clone git@github.com:jing-tw/autoclimb.git
+
+or 
+https://github.com/jing-tw/autoclimb/archive/master.zip
+
+```
 
 ## 執行
 ```sh
-$ git clone git clone git@github.com:jing-tw/autoclimb.git
 $ python autoclimb.py
 ```
 
