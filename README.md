@@ -9,15 +9,15 @@ sample.xlsx
 
 [![N|Solid](https://2.bp.blogspot.com/-CCmP-Ghkuo0/XKF5UameYrI/AAAAAAAAeBQ/aDO1JYJzIFkxmNJLtYCZAFw9i--oNOqMwCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B10-33-49.png)](https://2.bp.blogspot.com/-CCmP-Ghkuo0/XKF5UameYrI/AAAAAAAAeBQ/aDO1JYJzIFkxmNJLtYCZAFw9i--oNOqMwCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B10-33-49.png)
 
-## 安裝軟體
+## 安裝執行環境
 ### Install Chrome (確定安裝最新版)
 https://www.google.com/chrome/
 
-### 安裝與設定 Python 執行環境
+### 安裝與設定 Python
 #### ( a ) Insatll Anaconda
 https://www.anaconda.com/distribution/
 
-#### ( b ) Setup Environment
+#### ( b ) Setup Virtual Environment
 ```sh
 $ conda create --name venv_climbing python=3.6
 
@@ -54,5 +54,10 @@ $ python autoclimb.py
 
 License
 ----
-
 MIT
+
+
+歡迎協同開發
+
+Enjoy!
+by Jing.
