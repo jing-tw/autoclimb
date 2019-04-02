@@ -14,7 +14,7 @@ sample.xlsx
 ### Step 1: Insatll Anaconda
 https://www.anaconda.com/distribution/
 
-### Step 2: 設定環境
+### Step 2: Setup Environment
 ```sh
 $ conda create --name venv_climbing python=3.6
 
@@ -25,7 +25,7 @@ for Windows
 > conda activate env_climbing
 ```
 
-### Step 3: Install the packages
+### Step 3: Install Packages
 ```sh
 (venv_climbing) $ conda install -c conda-forge selenium pyside2 xlrd pandas
 (venv_climbing) $ pip install webdriver-manager
