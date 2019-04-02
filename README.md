@@ -37,6 +37,7 @@ for Windows
 
 ## 執行
 ```sh
+$ git clone git clone git@github.com:jing-tw/autoclimb.git
 $ python autoclimb.py
 ```
 
