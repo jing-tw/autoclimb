@@ -9,14 +9,15 @@ sample.xlsx
 
 [![N|Solid](https://2.bp.blogspot.com/-CCmP-Ghkuo0/XKF5UameYrI/AAAAAAAAeBQ/aDO1JYJzIFkxmNJLtYCZAFw9i--oNOqMwCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B10-33-49.png)](https://2.bp.blogspot.com/-CCmP-Ghkuo0/XKF5UameYrI/AAAAAAAAeBQ/aDO1JYJzIFkxmNJLtYCZAFw9i--oNOqMwCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B10-33-49.png)
 
-## 確定安裝 Chrome Browser
+## 安裝軟體
+### Install Chrome (確定安裝最新版)
 https://www.google.com/chrome/
 
-## 安裝 Python
-### Step 1: Insatll Anaconda
+### 安裝與設定 Python 執行環境
+#### ( a ) Insatll Anaconda
 https://www.anaconda.com/distribution/
 
-### Step 2: Setup Environment
+#### ( b ) Setup Environment
 ```sh
 $ conda create --name venv_climbing python=3.6
 
@@ -27,11 +28,12 @@ for Windows
 > conda activate env_climbing
 ```
 
-### Step 3: Install Packages
+#### ( c ) Install Packages
 ```sh
 (venv_climbing) $ conda install -c conda-forge selenium pyside2 xlrd pandas
 (venv_climbing) $ pip install webdriver-manager
 ```
+
 
 ## 執行
 ```sh
