@@ -13,7 +13,8 @@ sample.xlsx
 ## 安裝 Python
 ### Step 1: Insatll Anaconda
 https://www.anaconda.com/distribution/
-### Step 2: Install the package
+
+### Step 2: Install the packages
   ```sh
   $ conda install -c conda-forge selenium, pyside2, xlrd, pandas
   $ pip install webdriver-manager
