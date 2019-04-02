@@ -13,17 +13,14 @@ sample.xlsx
 ## 安裝 Python
 ### Step 1: Insatll Anaconda
 https://www.anaconda.com/distribution/
-### Step 2: Install the package
+
+### Step 2: Install the packages
   ```sh
   $ conda install -c conda-forge selenium, pyside2, xlrd, pandas
   $ pip install webdriver-manager
   ```
 
-## 命令列執行
-```sh
-$ python autoclimb.py -gui 0 -list sample.xlsx
-```
-## 視窗執行
+## 執行
 ```sh
 $ python autoclimb.py
 ```
