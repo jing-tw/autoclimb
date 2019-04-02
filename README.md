@@ -16,7 +16,7 @@ https://www.anaconda.com/distribution/
 
 ### Step 2: Install the packages
   ```sh
-  $ conda install -c conda-forge selenium, pyside2, xlrd, pandas
+  $ conda install -c conda-forge selenium pyside2 xlrd pandas
   $ pip install webdriver-manager
   ```
 
