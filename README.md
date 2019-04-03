@@ -58,7 +58,7 @@ License
 MIT
 
 
-歡迎開發
+歡迎一起開發 
 
 Enjoy!
 by Jing.
