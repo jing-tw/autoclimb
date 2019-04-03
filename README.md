@@ -51,13 +51,14 @@ $ python autoclimb.py
 # Developer #
 - [Task](https://docs.google.com/spreadsheets/d/1zBzCCGJZ_3ZbQgUl_GSnXP8J3mQQUV7dGDGVw76bHoM/edit?usp=sharing)
 - [Programming skill](https://docs.google.com/document/d/1U1DZayMw3cEL8ZdOzN_gHTSscGgNYd_E1NKMIRDAXzY/edit?usp=sharing)
+- [Excel 設定技巧](https://docs.google.com/document/d/1AG0J3jg4ULTDfpDM3BD9i5ZeutwTJr4b7w9iTzz-DEM/edit?usp=sharing)
 
 License
 ----
 MIT
 
 
-歡迎協同開發
+歡迎開發
 
 Enjoy!
 by Jing.
