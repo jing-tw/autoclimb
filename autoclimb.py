@@ -64,39 +64,11 @@ import sys
 import random
 from PySide2.QtWidgets import (QApplication, QLabel, QPushButton, QVBoxLayout, QWidget)
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QAbstractButton
-from PySide2.QtGui import QPixmap, QPainter
+from PySide2.QtWidgets import QDesktopWidget, QMessageBox
+from PySide2.QtGui import QPixmap
 
-class PicButton(QAbstractButton):
-    def __init__(self, pixmap, parent=None):
-        super(PicButton, self).__init__(parent)
-        self.pixmap = pixmap
-        self.enter = False
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.drawPixmap(event.rect(), self.pixmap)
-
-        if self.enter:
-            qp = QtGui.QPainter()
-            qp.begin(self)
-            self.drawRectangles(qp, event.rect())
-            qp.end()
-
-    def drawRectangles(self, qp, rec):
-        qp.setBrush(QtGui.QColor(000, 000, 255, 255/4))
-        qp.drawRect(rec.left(), rec.top(), rec.width(), rec.height())
-
-    def enterEvent(self, event):
-        self.enter = True
-        self.update()
-
-    def leaveEvent(self, event):
-        self.enter = False
-        self.update()
-
-    def sizeHint(self):
-        return self.pixmap.size()
+from gui_button import PicButton
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
@@ -108,7 +80,7 @@ class MyWidget(QtWidgets.QWidget):
         self.bt_yushan = PicButton(QPixmap('./res/img/Yushan.png'))
         self.bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
         self.bt_sheipa = PicButton(QPixmap('./res/img/Sheipa.png'))
-        self.bt_fill_member = QPushButton('填入成員資料')
+        self.bt_fill_member = QPushButton('自動填入成員資料')
 
         # add status label
         self.text_status = QtWidgets.QLabel("Status")
@@ -141,6 +113,9 @@ class MyWidget(QtWidgets.QWidget):
         self.dict_arg = {}
         self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
         self.dict_arg['park'] = DEFAULT_PARK
+        self.dict_arg['auto_fill_member_list_at_start_for_demo'] = 1
+
+        self.loc_center()
 
     def run_fill_member(self):
         if self.obj_auto != None:
@@ -165,8 +140,25 @@ class MyWidget(QtWidgets.QWidget):
         self.load_memlst()
         ok, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
         if not ok: print('Error: utl_read_data failure'); return
+        
+        
+        '''
+        reply = QMessageBox.question(self, 'Continue?', 
+                '<html style="font-size:16pt;"> 是否要展示自動填入隊員資料?<br><br> 放心! 選完行程後, 你還可以自動填入隊員資料</html>', QMessageBox.Yes, QMessageBox.No)
+        '''
+        reply = QMessageBox.question(self, 'Continue?', 
+                '<html> <p style="font-size:16pt"> 是否現在要自動填入隊員資料? <br> (請放心! 選擇 No, 稍後還可以自動填入隊員資料) </p></html>', QMessageBox.Yes, QMessageBox.No)
 
-        self.obj_auto = ParkAuto(self.dict_arg['park'], lst_mem, lst_stay)
+        if reply == QMessageBox.Yes:
+            print('reply = ', 'Yes')
+            self.dict_arg['auto_fill_member_list_at_start_for_demo'] = True
+        else:
+            print('reply = ', 'NO')
+            self.dict_arg['auto_fill_member_list_at_start_for_demo'] = False
+        
+        print('reply = ', reply)
+
+        self.obj_auto = ParkAuto(self.dict_arg, lst_mem, lst_stay)
         self.obj_auto.run()
         self.show()
 
@@ -179,6 +171,14 @@ class MyWidget(QtWidgets.QWidget):
         if fileName:
             print(fileName[0])
             self.dict_arg['memberlist'] = fileName[0]
+
+    def loc_center(self):
+        sg = QDesktopWidget().screenGeometry()
+
+        widget = self.geometry()
+        x = sg.width()/2 - widget.width()/2
+        y = sg.height()/2 - widget.height()/2
+        self.move(x, y)
 
 def init_arg():
     parser = argparse.ArgumentParser()
@@ -195,10 +195,11 @@ def main():
     bValid, dict_arg = init_arg()
 
     if dict_arg['gui'] == 0:
-        ok, lst_mem, lst_stay = utl_read_data(dict_arg['memberlist'])
-        if not ok: print('Error: utl_read_data failure'); return
-        obj_auto = ParkAuto(dict_arg['park'], lst_mem, lst_stay)
-        obj_auto.run()
+        print('Console mode was obsoleted. Use: python autoclimb.py')
+        # ok, lst_mem, lst_stay = utl_read_data(dict_arg['memberlist'])
+        # if not ok: print('Error: utl_read_data failure'); return
+        # obj_auto = ParkAuto(dict_arg['park'], lst_mem, lst_stay)
+        # obj_auto.run()
     else:
         app = QtWidgets.QApplication([])
         widget = MyWidget()

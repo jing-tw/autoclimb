@@ -12,9 +12,10 @@ class ParkAuto:
     id_tab_member = 'ContentPlaceHolder1_menu3'
     id_tab_stay = 'ContentPlaceHolder1_menu4'
 
-    def __init__(self, park, lst_mem, lst_stay):
+    def __init__(self, dict_arg, lst_mem, lst_stay):
         print('Start Taiwan National Park Automation ')
-        self.park = park
+        self.park = dict_arg['park']
+        self.auto_fill_member_list_at_start_for_demo = dict_arg['auto_fill_member_list_at_start_for_demo']
 
         count_member = len(lst_mem)
 
@@ -52,14 +53,16 @@ class ParkAuto:
         self.fill_form_member(self.id_tab_member)
 
     def apply(self):
-        # 入園線上申請
         self.fill_form_schedule(self.id_tab_schedule)
         self.fill_form_applyer(self.id_tab_applyer)
         self.fill_form_leader(self.id_tab_leader)
 
         print('apply')
-        self.run_fill_form_member()
+        if self.auto_fill_member_list_at_start_for_demo:
+            self.run_fill_form_member()
+        
         self.fill_form_stay(self.id_tab_stay)
+        
 
     def _Yushan(self):
         self.curPark = 'Yushan'
