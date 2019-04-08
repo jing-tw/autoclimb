@@ -62,7 +62,7 @@ Step 2:
 - [Excel 設定技巧](https://docs.google.com/document/d/1AG0J3jg4ULTDfpDM3BD9i5ZeutwTJr4b7w9iTzz-DEM/edit?usp=sharing)
 
 ## 問題回報
-github issue or mqjing@gmail.com
+https://github.com/jing-tw/autoclimb/issues or mqjing@gmail.com
 
 License
 ----
