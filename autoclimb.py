@@ -142,13 +142,21 @@ class MyWidget(QtWidgets.QWidget):
         if not ok: print('Error: utl_read_data failure'); return
         
         
-
+        '''
         reply = QMessageBox.question(self, 'Continue?', 
-                '是否要展示自動填入隊員資料?', QMessageBox.Yes, QMessageBox.No)
+                '<html style="font-size:16pt;"> 是否要展示自動填入隊員資料?<br><br> 放心! 選完行程後, 你還可以自動填入隊員資料</html>', QMessageBox.Yes, QMessageBox.No)
+        '''
+        reply = QMessageBox.question(self, 'Continue?', 
+                '<html> <p style="font-size:16pt"> 是否現在要自動填入隊員資料? <br> (請放心! 選擇 No, 稍後還可以自動填入隊員資料) </p></html>', QMessageBox.Yes, QMessageBox.No)
+
         if reply == QMessageBox.Yes:
+            print('reply = ', 'Yes')
             self.dict_arg['auto_fill_member_list_at_start_for_demo'] = True
         else:
+            print('reply = ', 'NO')
             self.dict_arg['auto_fill_member_list_at_start_for_demo'] = False
+        
+        print('reply = ', reply)
 
         self.obj_auto = ParkAuto(self.dict_arg, lst_mem, lst_stay)
         self.obj_auto.run()
