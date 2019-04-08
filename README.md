@@ -45,7 +45,15 @@ https://github.com/jing-tw/autoclimb/archive/master.zip
 
 ## 執行
 ```sh
-$ python autoclimb.py
+Step 1: 切進執行環境
+for Linux
+$ source activate venv_climbing
+
+for Windows
+> conda activate env_climbing
+
+Step 2: 
+(env_climbing) $ python autoclimb.py
 ```
 
 ## for Developer
