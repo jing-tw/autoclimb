@@ -180,6 +180,27 @@ class MyWidget(QtWidgets.QWidget):
         y = sg.height()/2 - widget.height()/2
         self.move(x, y)
 
+def check_update():
+    import subprocess
+
+    try:
+        '''
+        cmd_local = 'git rev-parse @'.split()
+        local = subprocess.check_output(cmd_local)
+        print('local = ', local)
+        '''
+
+        cmd_check = 'git status -uno'.split()
+        response = subprocess.check_output(cmd_check)
+        print('response = ', response)
+
+
+    except subprocess.CalledProcessError:
+        print('[Error] Unable to get git information')
+
+
+
+
 def init_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('-gui', '--gui', type=int, default = DEFAULT_GUI, help="Enable GUI mode")
@@ -192,6 +213,7 @@ def init_arg():
 
 
 def main():
+    check_update()
     bValid, dict_arg = init_arg()
 
     if dict_arg['gui'] == 0:
