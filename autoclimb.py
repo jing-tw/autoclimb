@@ -190,37 +190,29 @@ def check_update():
         
         cmd_local = 'git rev-parse @'.split()   # return local HEAD id
         local = subprocess.check_output(cmd_local)
-        print('local = ', local)
-        
         cmd_remote = 'git rev-parse @{u}'.split()   # return remote HEAD id
         remote = subprocess.check_output(cmd_remote)
-        print('remote = ', remote)
-
-        cmd_commbase = 'git merge-base @ @{u}'   # return comm id
-        comm_base = subprocess.check_output(cmd_remote)
-        print('comm_base = ', comm_base)
+        cmd_commbase = 'git merge-base @ @{u}'.split()   # return comm id
+        comm_base = subprocess.check_output(cmd_commbase)
 
         if local == remote:
-            print('Up-to-date')
-            return 0
+            desc = '版本檢查: 目前是最新版'
+            return 0, desc
         elif local == comm_base:
-            print('有新版本')
-            print('請執行 git pull 進行更新')
-            return 1
+            desc = '版本檢查: 有新版本. 請執行 git pull 進行更新'
+            return 1, desc
 
-        else remote == commom_base:
-            print('Need to push')
-            return 2
+        elif remote == comm_base:
+            desc = '版本檢查: Need to push'
+            return 2, desc
 
         else:
-            print('Diverged')
-            return 3
+            desc = '版本檢查: Diverged'
+            return 3, desc
         
     except subprocess.CalledProcessError:
-        print('[Error] Unable to get git information')
-        return 4
-
-
+        desc = '版本檢查: [Error] Unable to get git information'
+        return 4, desc
 
 def init_arg():
     parser = argparse.ArgumentParser()
@@ -229,12 +221,11 @@ def init_arg():
     parser.add_argument('-list', '--memberlist', default = DEFAULT_MEMBERLIST, help='sample.xlsx')
 
     args = parser.parse_args()
-    #print("args.park =", args.park)
     return 1, {'park':args.park, 'memberlist':args.memberlist, 'gui': args.gui}
 
-
 def main():
-    check_update()
+    result, desc = check_update()
+    print(desc)
     bValid, dict_arg = init_arg()
 
     if dict_arg['gui'] == 0:
