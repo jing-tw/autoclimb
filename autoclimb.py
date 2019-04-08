@@ -187,13 +187,10 @@ def check_update():
 
     try:
         print('checking versin ...')
-        
-        cmd_local = 'git rev-parse @'.split()   # return local HEAD id
-        local = subprocess.check_output(cmd_local)
-        cmd_remote = 'git rev-parse @{u}'.split()   # return remote HEAD id
-        remote = subprocess.check_output(cmd_remote)
-        cmd_commbase = 'git merge-base @ @{u}'.split()   # return comm id
-        comm_base = subprocess.check_output(cmd_commbase)
+        subprocess.check_output('git fetch'.split())  # update ref
+        local = subprocess.check_output('git rev-parse @'.split()) # return local HEAD id
+        remote = subprocess.check_output('git rev-parse @{u}'.split()) # return remote HEAD id
+        comm_base = subprocess.check_output('git merge-base @ @{u}'.split()) # return comm id
 
         if local == remote:
             desc = '版本檢查: 目前是最新版'
