@@ -181,23 +181,44 @@ class MyWidget(QtWidgets.QWidget):
         self.move(x, y)
 
 def check_update():
+    # ref: https://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
+
     import subprocess
 
     try:
-        '''
-        cmd_local = 'git rev-parse @'.split()
+        print('checking versin ...')
+        
+        cmd_local = 'git rev-parse @'.split()   # return local HEAD id
         local = subprocess.check_output(cmd_local)
         print('local = ', local)
-        '''
+        
+        cmd_remote = 'git rev-parse @{u}'.split()   # return remote HEAD id
+        remote = subprocess.check_output(cmd_remote)
+        print('remote = ', remote)
 
-        cmd_check = 'git status -uno'.split()
-        response = subprocess.check_output(cmd_check)
-        print('response = ', response)
+        cmd_commbase = 'git merge-base @ @{u}'   # return comm id
+        comm_base = subprocess.check_output(cmd_remote)
+        print('comm_base = ', comm_base)
 
+        if local == remote:
+            print('Up-to-date')
+            return 0
+        elif local == comm_base:
+            print('有新版本')
+            print('請執行 git pull 進行更新')
+            return 1
 
+        else remote == commom_base:
+            print('Need to push')
+            return 2
+
+        else:
+            print('Diverged')
+            return 3
+        
     except subprocess.CalledProcessError:
         print('[Error] Unable to get git information')
-
+        return 4
 
 
 
