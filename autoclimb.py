@@ -86,6 +86,11 @@ class MyWidget(QtWidgets.QWidget):
         self.text_status = QtWidgets.QLabel("Status")
         self.text_status.setAlignment(QtCore.Qt.AlignCenter)
 
+        res, desc = check_update()
+        print(desc)
+        if res == 0 or res == 1:
+            self.text_status.setText(desc)
+
         # layout: upper
         box_button = QtWidgets.QHBoxLayout()
         box_button.addStretch(1)
@@ -141,11 +146,6 @@ class MyWidget(QtWidgets.QWidget):
         ok, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
         if not ok: print('Error: utl_read_data failure'); return
         
-        
-        '''
-        reply = QMessageBox.question(self, 'Continue?', 
-                '<html style="font-size:16pt;"> 是否要展示自動填入隊員資料?<br><br> 放心! 選完行程後, 你還可以自動填入隊員資料</html>', QMessageBox.Yes, QMessageBox.No)
-        '''
         reply = QMessageBox.question(self, 'Continue?', 
                 '<html> <p style="font-size:16pt"> 是否現在要自動填入隊員資料? <br> (請放心! 選擇 No, 稍後還可以自動填入隊員資料) </p></html>', QMessageBox.Yes, QMessageBox.No)
 
@@ -221,8 +221,6 @@ def init_arg():
     return 1, {'park':args.park, 'memberlist':args.memberlist, 'gui': args.gui}
 
 def main():
-    result, desc = check_update()
-    print(desc)
     bValid, dict_arg = init_arg()
 
     if dict_arg['gui'] == 0:
