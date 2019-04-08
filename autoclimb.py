@@ -180,6 +180,40 @@ class MyWidget(QtWidgets.QWidget):
         y = sg.height()/2 - widget.height()/2
         self.move(x, y)
 
+def check_update():
+    # ref: https://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
+
+    import subprocess
+
+    try:
+        print('checking versin ...')
+        
+        cmd_local = 'git rev-parse @'.split()   # return local HEAD id
+        local = subprocess.check_output(cmd_local)
+        cmd_remote = 'git rev-parse @{u}'.split()   # return remote HEAD id
+        remote = subprocess.check_output(cmd_remote)
+        cmd_commbase = 'git merge-base @ @{u}'.split()   # return comm id
+        comm_base = subprocess.check_output(cmd_commbase)
+
+        if local == remote:
+            desc = '版本檢查: 目前是最新版'
+            return 0, desc
+        elif local == comm_base:
+            desc = '版本檢查: 有新版本. 請執行 git pull 進行更新'
+            return 1, desc
+
+        elif remote == comm_base:
+            desc = '版本檢查: Need to push'
+            return 2, desc
+
+        else:
+            desc = '版本檢查: Diverged'
+            return 3, desc
+        
+    except subprocess.CalledProcessError:
+        desc = '版本檢查: [Error] Unable to get git information'
+        return 4, desc
+
 def init_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('-gui', '--gui', type=int, default = DEFAULT_GUI, help="Enable GUI mode")
@@ -187,11 +221,11 @@ def init_arg():
     parser.add_argument('-list', '--memberlist', default = DEFAULT_MEMBERLIST, help='sample.xlsx')
 
     args = parser.parse_args()
-    #print("args.park =", args.park)
     return 1, {'park':args.park, 'memberlist':args.memberlist, 'gui': args.gui}
 
-
 def main():
+    result, desc = check_update()
+    print(desc)
     bValid, dict_arg = init_arg()
 
     if dict_arg['gui'] == 0:
