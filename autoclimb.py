@@ -1,7 +1,10 @@
 
 import argparse
+import time
+
 from park_auto import ParkAuto
 
+PROG_NAME = 'autoclimb.py'
 DEFAULT_GUI = 1
 DEFAULT_PARK = 2
 DEFAULT_MEMBERLIST = 'sample.xlsx'
@@ -86,11 +89,6 @@ class MyWidget(QtWidgets.QWidget):
         self.text_status = QtWidgets.QLabel("Status")
         self.text_status.setAlignment(QtCore.Qt.AlignCenter)
 
-        res, desc = check_update()
-        print(desc)
-        if res == 0 or res == 1:
-            self.text_status.setText(desc)
-
         # layout: upper
         box_button = QtWidgets.QHBoxLayout()
         box_button.addStretch(1)
@@ -119,27 +117,50 @@ class MyWidget(QtWidgets.QWidget):
         self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
         self.dict_arg['park'] = DEFAULT_PARK
         self.dict_arg['auto_fill_member_list_at_start_for_demo'] = 1
-
+        self.dict_arg['ui'] = self
         self.loc_center()
+
+        self.text_status.setText('正在檢查版本 ...')
+        QtCore.QTimer.singleShot(200, self.check_version)
+
+        
+        
+
+    def set_window_title(self, strversion):
+        self.setWindowTitle(PROG_NAME + '(commit id): ' + strversion)
+
+    def check_version(self):
+        res, desc, local_id = check_update()
+        out = desc + '<br>(' + local_id.decode("utf-8").rstrip() + ')'
+        print(out)
+        self.text_status.setText(out)
+        
 
     def run_fill_member(self):
         if self.obj_auto != None:
             self.obj_auto.run_fill_form_member()
 
+    def update_status(self, strStatus):
+        print(strStatus)
+        self.text_status.setText(strStatus)
+
     def run_yushan(self):
-        print('run')
+        self.update_status('玉山國家公園')
         self.dict_arg['park'] = 0
         self.run()
+        
 
     def run_taroko(self):
-        print('run')
+        self.update_status('太魯閣國家公園')
         self.dict_arg['park'] = 1
         self.run()
+        
 
     def run_sheipa(self):
-        print('run')
+        self.update_status('雪霸國家公園')
         self.dict_arg['park'] = 2
         self.run()
+        
 
     def run(self):
         self.load_memlst()
@@ -160,10 +181,11 @@ class MyWidget(QtWidgets.QWidget):
 
         self.obj_auto = ParkAuto(self.dict_arg, lst_mem, lst_stay)
         self.obj_auto.run()
-        self.show()
+        # self.show()
 
         # show re-fill member button only when obj_auto_run exist
         self.bt_fill_member.setVisible(True)
+        self.update_status('完成. <br> 右側按鈕: 可以自動填入隊員資料')
     
     def load_memlst(self):
         print('load')
@@ -194,14 +216,14 @@ def check_update():
 
         if local == remote:
             desc = '版本檢查: 目前是最新版'
-            return 0, desc
+            return 0, desc, local
         elif local == comm_base:
-            desc = '版本檢查: 有新版本. 請執行 git pull 進行更新'
-            return 1, desc
+            desc = '版本檢查: 發現有新版本, 可執行 git pull 更新'
+            return 1, desc, local
 
         elif remote == comm_base:
             desc = '版本檢查: Need to push'
-            return 2, desc
+            return 2, desc, local
 
         else:
             desc = '版本檢查: Diverged'
@@ -209,7 +231,7 @@ def check_update():
         
     except subprocess.CalledProcessError:
         desc = '版本檢查: [Error] Unable to get git information'
-        return 4, desc
+        return 4, desc, local
 
 def init_arg():
     parser = argparse.ArgumentParser()
