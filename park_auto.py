@@ -195,7 +195,7 @@ class ParkAuto:
         lst_mem = self.lst_stay
         i = 0
         self.browser.fill_text(dict_id['id_name'], lst_mem[i]['id_name'])
-        self.browser.fill_text(dict_id['id_tel'], lst_mem[i]['id_tel']) # 電話
+        self.browser.fill_text(dict_id['id_mobile'], lst_mem[i]['id_tel']) # 電話
         self.browser.fill_text(dict_id['id_email'], lst_mem[i]['id_email']) # email
 
         self.browser.speed_init()
