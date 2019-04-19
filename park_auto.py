@@ -188,7 +188,7 @@ class ParkAuto:
         dict_id={}
         pre = 'ContentPlaceHolder1' + '_stay'
         dict_id['id_name'] = pre + '_name'
-        dict_id['id_tel'] = pre + '_tel'
+        dict_id['id_mobile'] = pre + '_mobile'
         dict_id['id_email'] = pre + '_email'
 
         self.browser.speed_up()
