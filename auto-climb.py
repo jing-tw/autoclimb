@@ -4,7 +4,7 @@ import time
 
 from park_auto import ParkAuto
 
-PROG_NAME = 'autoclimb.py'
+PROG_NAME = 'auto-climb.py'
 DEFAULT_GUI = 1
 DEFAULT_PARK = 2
 DEFAULT_MEMBERLIST = 'sample.xlsx'
@@ -214,7 +214,7 @@ def check_update():
     import subprocess
 
     try:
-        print('checking versin ...')
+        print('checking version ...')
         subprocess.check_output('git fetch'.split())  # update ref
         local = subprocess.check_output('git rev-parse @'.split()) # return local HEAD id
         remote = subprocess.check_output('git rev-parse @{u}'.split()) # return remote HEAD id
