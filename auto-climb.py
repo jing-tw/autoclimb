@@ -188,10 +188,14 @@ class MyWidget(QtWidgets.QWidget):
             self.bt_fill_member.setVisible(True)
             self.update_status('完成. <br> 右側按鈕: 可以自動填入隊員資料')
         except Exception as e:
-            msg = '請確定機器連線, 並更新你的瀏覽器版本'
-            msg = msg + '\nformat(e) = ' + format(e)
+            import traceback
+            traceback.print_exc()
+
+            msg = '\n\n查閱上方錯誤訊息, 進行檢測. 大多是下面的問題, 處理完就能順利執行了.\n\n1.請確定你的機器是否連上網際網路\n2.瀏覽器是否已經被關閉了\n3.有可能是瀏覽器版本太舊了, 請更新你的瀏覽器版本.\n\n'.format(format(e))
             print(msg)
-            msg = '更新 Chrome 指令:\nUbuntu: {}'.format('sudo apt-get --only-upgrade install google-chrome-stable')
+            msg = '更新 Chrome 最新版本的指令:\nUbuntu:\n{}'.format('sudo apt-get --only-upgrade install google-chrome-stable')
+            print(msg)
+
             return
     
     def load_memlst(self):

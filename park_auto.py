@@ -21,7 +21,7 @@ class ParkAuto:
 
         # team
         self.dict_team = {
-            'name': 'Sloss Huang 的浪漫',
+            'name': '平安喜樂',
             'climbline_main_idx': 1,       # 主路線 (default idx)
             'climbline_sub_idx': 1,        # 次路線 (default idx)
             'total_day': 1,                # 總天數 (default)
@@ -34,7 +34,7 @@ class ParkAuto:
 
         # stay list
         self.lst_stay = lst_stay
-        
+
     def run(self):
         self.browser = BrowserAuto(self.addr_park)
         switch = {  0 : self._Yushan,
@@ -60,9 +60,9 @@ class ParkAuto:
         print('apply')
         if self.auto_fill_member_list_at_start_for_demo:
             self.run_fill_form_member()
-        
+
         self.fill_form_stay(self.id_tab_stay)
-        
+
 
     def _Yushan(self):
         self.curPark = 'Yushan'
@@ -89,7 +89,7 @@ class ParkAuto:
         dict_team = self.dict_team
         # 路線行程規劃
         self.browser.click_id(id_tab_schedule)
-        
+
         if self.curPark != 'Taroko':
             self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name']) # 隊名
         self.browser.select_inx('ContentPlaceHolder1_climblinemain', dict_team['climbline_main_idx']) # 主路線
@@ -103,7 +103,7 @@ class ParkAuto:
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山登山口
         self.browser.click_id('ContentPlaceHolder1_btnover')   # 完成今日路線
         self.browser.select_inx('ContentPlaceHolder1_teams_count', dict_team['member_count']) # 人數
-        
+
     def fill_form_applyer(self, id_tab_applyer):
         self.browser.click_id(id_tab_applyer)
 
@@ -128,17 +128,23 @@ class ParkAuto:
         # leader
         self._fill_member_detail(0, dict_id, self.lst_mem)
 
+        # verify
+        self.browser.click_id(id_tab_applyer)
+        ok, set_failure_key, msg = self._fill_member_detail_verify(0, dict_id, self.lst_mem)
+
     def fill_form_leader(self, id_tab_leader):
         id_leader = 'ContentPlaceHolder1_copyapply'
         self.browser.click_id(id_tab_leader)
         self.browser.click_id(id_leader)
-        
+
     def fill_form_member(self, id_tab_member):
         id_confirm = 'ContentPlaceHolder1_member_keytype' # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令。
         self.browser.click_id(id_tab_member)
-        self.browser.click_id(id_confirm)
-        print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
-        self.browser.handle_alert_popup()
+
+        if self.browser.get_attribute('checked', id_confirm) != 'true':
+            self.browser.click_id(id_confirm)
+            print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
+            self.browser.handle_alert_popup()
 
         dict_id={}
         dict_id['id_name'] = 'ContentPlaceHolder1_lisMem_member_name'
@@ -158,7 +164,18 @@ class ParkAuto:
         lst_mem = self.lst_mem
         for i in range(1, len(lst_mem)):
             self._fill_member_detail(i, dict_id, lst_mem)
-            
+
+
+         # verify
+        # id_confirm = 'ContentPlaceHolder1_member_keytype' # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令。
+        # self.browser.click_id(id_tab_member)
+        # self.browser.click_id(id_confirm)
+        # print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
+        # self.browser.handle_alert_popup()
+
+        for i in range(1, len(lst_mem)):
+            ok, set_failure_key, msg = self._fill_member_detail_verify(i, dict_id, self.lst_mem)
+
     def _fill_member_detail(self, i, dict_id, lst_mem):
         self.browser.speed_up()
         if i == 0:
@@ -181,6 +198,55 @@ class ParkAuto:
         self.browser.fill_text(dict_id['id_contact_name']+strIdx, lst_mem[i]['id_contact_name'])
         self.browser.fill_text(dict_id['id_contact_tel']+strIdx, lst_mem[i]['id_contact_tel'])
         self.browser.speed_init()
+
+        return 1, 'ok'
+
+    def _fill_member_detail_verify(self, i, dict_id, lst_mem):
+        self.browser.speed_up()
+        if i == 0:
+            strIdx = ''
+        else:
+            strIdx = '_' + str(i - 1)
+
+        # verify
+        print('Verifyin the content ...')
+        lst_key_fill_text = ['id_name', 'id_tel', 'id_address', 'id_mobile', 'id_email', 'id_pid_nation', 'id_pid_num', 'id_sex', 'id_contact_name', 'id_contact_tel']
+        ok = 1; msg = 'ok'
+        set_failure_key = set()
+
+        try_num = 0
+        restart = 1
+        while restart:
+            item_len = len(lst_key_fill_text)
+            for ii in range(0, item_len):
+                str_key = lst_key_fill_text[ii]
+                if ii == item_len - 1 or try_num > 5:
+                    restart = 0
+                ok, msg = self.browser.fill_text_verify(dict_id[str_key]+strIdx, lst_mem[i][str_key])
+                if not ok:
+                    msg = '{} checked, failure.\nmsg = '.format(str_key, msg)
+                    ok = 0
+                    print(msg)
+                    set_failure_key.add(str_key)
+
+                    print('try again... str_key = {}, data = {}'.format(str_key, lst_mem[i][str_key]))
+                    time.sleep(2)
+                    try:
+                        self.browser.fill_text(dict_id[str_key]+strIdx, lst_mem[i][str_key])
+                    except TimeoutException as e:
+                        import traceback
+                        traceback.print_exc()
+                        print('Exception: ' + str(e)) 
+
+                    try_num = try_num + 1
+                    ii = ii - 1
+                    continue
+                    
+                else:
+                    print('--------------------> {} checked, {} pass.'.format(str_key, lst_mem[i][str_key]))
+
+        self.browser.speed_init()
+        return ok, set_failure_key, msg
 
     def fill_form_stay(self, id_tab_stay):
         self.browser.click_id(id_tab_stay)

@@ -4,6 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.action_chains import ActionChains   # for auto scroll
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class BrowserAuto:
     SPEED_DEFAULT = 1  # wait sec
@@ -29,23 +32,26 @@ class BrowserAuto:
         self.WAIT_SEC = 0.05
     
     def scroll_to_element(self, element):
-        self.driver.execute_script("arguments[0].scrollIntoView();", element)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
 
     def do_action(self, strCommand, dict_arg):
         bRun = True
         cnt = 0
+        ok = 0; msg = 'false'
         while bRun:
             try:
                 if cnt > self.MAX_WAIT_CNT:
                     print('Error: cnt > self.MAX_WAIT_CNT') 
                     bRun = False
                 time.sleep(self.WAIT_SEC) 
-                self._switch(strCommand, dict_arg)
+                ok, msg = self._switch(strCommand, dict_arg)
                 bRun = False
             except (selenium.common.exceptions.StaleElementReferenceException, selenium.common.exceptions.NoSuchElementException, selenium.common.exceptions.ElementNotInteractableException) as err:
                 print('Exception: ', err)
                 print('Wait and try again')
                 cnt = cnt + 1
+
+        return ok, msg
 
     def _switch(self, strCommand, dict_arg):
         fun_switch = {
@@ -54,12 +60,16 @@ class BrowserAuto:
             'fill_text': self._fill_text,
             'select_inx': self._select_inx,
             'set_yyyymmdd': self._set_yyyymmdd,
+
+            'fill_text_verify':self._fill_text_verify,
         }
 
-        fun_switch[strCommand](dict_arg)
+        return fun_switch[strCommand](dict_arg)
 
     def click(self, strTitle):
-        dict_arg = {}; dict_arg['strTitle'] = strTitle; self.do_action('click', dict_arg)
+        dict_arg = {}
+        dict_arg['strTitle'] = strTitle
+        return self.do_action('click', dict_arg)
 
     def _click(self, dict_arg):
         strTitle = dict_arg['strTitle']
@@ -68,27 +78,87 @@ class BrowserAuto:
         self.scroll_to_element(element)
         element.click()
 
+        #FIXME: always return pass
+        return 1, 'ok'
+
+    def get_attribute(self, str_type, strID):
+        element = self._get_elm_id(strID)
+        str_value = element.get_attribute(str_type)
+        print('strID = ', strID, ' str_value = ', str_value)
+        return str_value
+
+    
+
     def click_id(self, strID):
-        dict_arg = {}; dict_arg['strID'] = strID; self.do_action('click_id', dict_arg)
+        dict_arg = {}
+        dict_arg['strID'] = strID
+        return self.do_action('click_id', dict_arg)
 
     def _click_id(self, dict_arg):
         strID = dict_arg['strID']
         element = self._get_elm_id(strID)
         #self.scroll_to_element(element)
+
+        # # debug
+        # str_checked = element.get_attribute('value')
+        # print('_click_id:: strID = {} =====> element.get_attribute(value) = {}'.format(strID, element.get_attribute('value')))
+        
+        # # end 
+
         element.click()
 
+        #FIXME: always return pass
+        return 1, 'ok'
+
     def fill_text(self, strID, strText):
-        dict_arg = {}; dict_arg['strID'] = strID; dict_arg['strText'] = strText; self.do_action('fill_text', dict_arg)
+        return self.fill_text_core('fill_text', strID, strText)
+
+    def fill_text_verify(self, strID, strText):
+        try:
+            ok, msg = self.fill_text_core('fill_text_verify', strID, strText)
+            return 1, msg
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return 0, 'self.fill_text_core Exception'
+
+    def fill_text_core(self, str_funName, strID, strText):
+        dict_arg = {}
+        dict_arg['strID'] = strID
+        dict_arg['strText'] = strText
+        return self.do_action(str_funName, dict_arg)
 
     def _fill_text(self, dict_arg):
         strID = dict_arg['strID']
         strText = dict_arg['strText']
         element = self._get_elm_id(strID)
         self.scroll_to_element(element)
+        
+        # element.send_keys(strText)
+        from selenium.webdriver.common.keys import Keys
+        element.send_keys(Keys.CONTROL, 'a')
         element.send_keys(strText)
 
+        #FIXME: always return pass
+        return 1, 'ok'
+
+    def _fill_text_verify(self, dict_arg):
+        strID = dict_arg['strID']
+        strText = dict_arg['strText']
+        element = self._get_elm_id(strID)
+        self.scroll_to_element(element)
+
+        if element.get_attribute('value') == strText:
+            return 1, 'ok'
+        else:
+            return 0, 'Not Matched: element.text = {}, strText = {}\n'.format(element.text, strText)
+
+
     def select_inx(self, strID, inx):
-        dict_arg = {}; dict_arg['strID'] = strID; dict_arg['inx'] = inx; self.do_action('select_inx', dict_arg)
+        dict_arg = {}
+        dict_arg['strID'] = strID
+        dict_arg['inx'] = inx
+        return self.do_action('select_inx', dict_arg)
 
     def _select_inx(self, dict_arg):
         strID = dict_arg['strID']
@@ -98,8 +168,14 @@ class BrowserAuto:
         sele = Select(element)
         sele.select_by_index(inx)
 
+        #FIXME: always return pass
+        return 1, 'ok'
+
     def set_yyyymmdd(self, strID, yyyy, mm, date):
-        dict_arg = {}; dict_arg['strID'] = strID; dict_arg['yyyy'] = yyyy; dict_arg['mm'] = mm; dict_arg['date'] = date; self.do_action('set_yyyymmdd', dict_arg)
+        dict_arg = {}
+        dict_arg['strID'] = strID
+        dict_arg['yyyy'] = yyyy; dict_arg['mm'] = mm; dict_arg['date'] = date
+        return self.do_action('set_yyyymmdd', dict_arg)
         
     def _set_yyyymmdd(self, dict_arg):
         strID = dict_arg['strID']
@@ -123,13 +199,14 @@ class BrowserAuto:
             if(dates.is_enabled() and dates.is_displayed() and str(dates.get_attribute("innerText")) == str(date)):
                 dates.click()
 
+        #FIXME: always return pass
+        return 1, 'ok'
+
     def handle_alert_popup(self):
         # wait for alert window  
         # prevent: 
         #  Message: unexpected alert open: {Alert text :      
-        from selenium.webdriver.common.by import By
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
+        
 
         element = WebDriverWait(self.driver, 10).until(
             EC.alert_is_present() 
@@ -142,9 +219,9 @@ class BrowserAuto:
     def _get_elm_id(self, strID):
         # https://selenium-python.readthedocs.io/waits.html
         
-        from selenium.webdriver.common.by import By
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
+        # from selenium.webdriver.common.by import By
+        # from selenium.webdriver.support.ui import WebDriverWait
+        # from selenium.webdriver.support import expected_conditions as EC
 
         element = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, strID)) and 
