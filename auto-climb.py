@@ -71,7 +71,7 @@ from PySide2.QtWidgets import QDesktopWidget, QMessageBox
 from PySide2.QtGui import QPixmap
 
 
-from gui_button import PicButton
+from ui_button import PicButton
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
@@ -191,6 +191,7 @@ class MyWidget(QtWidgets.QWidget):
             msg = '請確定機器連線, 並更新你的瀏覽器版本'
             msg = msg + '\nformat(e) = ' + format(e)
             print(msg)
+            msg = '更新 Chrome 指令:\nUbuntu: {}'.format('sudo apt-get --only-upgrade install google-chrome-stable')
             return
     
     def load_memlst(self):
