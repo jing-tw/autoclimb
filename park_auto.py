@@ -83,7 +83,7 @@ class ParkAuto:
         self.browser.click('雪霸國家公園')
         self.browser.click_id('chk[]0') # 請申請人瞭解所填具之隊員資料與行程計畫等，如明知為不實或冒用他人資料填載入園申請之事項，將渉犯刑法第210條偽造文書罪嫌，或刑法第214條使公務員登載不實罪嫌，本處將依法先予以退件處理，並立即將申請人停權處分，另將涉案相關資料向司法機關依法告發
         self.browser.click_id('chk[]9') # 攀登路線如為B、C、C+級者，申請人及領隊應確認全體隊員均分別符合A、B、C級登山經驗能力才能申請，雪季期間另依公告辦理。
-        # self.browser.click_id('chk[]10')
+        self.browser.click_id('chk[]10')# 單人獨攀通知: 單人獨攀隊伍(者)應確實規劃登山計畫與風險評估，包含宿營地點.時間. 糧食. 飲水與裝備等， 並辦妥登山或旅遊保險，且攜帶衛星電話、GPS或有效之定位器材。另請依照路線地形審酌攜帶確保繩及安全頭盔等特殊裝備。獨攀者應定期向留守人作安全回報(留守人必須是有效留守)， 如本人未依登山計畫時間下山，也已交代留守人於第一時間通知管理處或消防單位以確保救援時效
         self.ok()
         self.apply()
 
@@ -93,7 +93,7 @@ class ParkAuto:
         self.browser.click_id(id_tab_schedule)
 
         if self.curPark != 'Taroko':
-            self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name']) # 隊名
+            self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name'], 0) # 隊名
         self.browser.select_inx('ContentPlaceHolder1_climblinemain', dict_team['climbline_main_idx']) # 主路線
         self.browser.select_inx('ContentPlaceHolder1_climbline', dict_team['climbline_sub_idx']) #次路線
         self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數

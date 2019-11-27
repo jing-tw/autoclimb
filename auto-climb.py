@@ -181,8 +181,8 @@ class MyWidget(QtWidgets.QWidget):
             self.bt_fill_member.setVisible(True)
             self.update_status('完成. <br> 右側按鈕: 可以自動填入隊員資料')
 
-            reply = QMessageBox.question(self, 'Continue?',
-                    '<html> <p style="font-size:16pt"> 請修改自己的行程 <br> 完成修改後, 點選自動填入隊員資料 </p></html>', QMessageBox.Yes, QMessageBox.No)
+            reply = QMessageBox.question(self, '訊息'',
+                    '<html> <p style="font-size:16pt"> 請修改自己的行程 <br> 完成修改後, 點選自動填入隊員資料 </p></html>', QMessageBox.Ok)
 
 
         except Exception as e:
