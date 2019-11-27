@@ -13,13 +13,11 @@ def read_data_xlsx(filename, sheet):
     import pandas as pd
     from pandas import ExcelWriter
     from pandas import ExcelFile
-    
+
     if filename.split('.')[1] == 'xlsx':
         df = pd.read_excel(filename, sheet, dtype='str')
     else:
         return False, None
-    #print("Column headings:")
-    #print(df.columns)
 
     list_data = []
     for i in df.index:
@@ -27,7 +25,6 @@ def read_data_xlsx(filename, sheet):
         for key in df.columns:
             dict_data[key] = df[key][i]
         list_data.append(dict_data)
-        #print('one person = ', dict_person)  
 
     return True, list_data
 
@@ -49,8 +46,7 @@ def utl_read_data(filename):
         return ret_error(' get_stay_data failure')
     if len(lst_stay) == 0:
         return ret_error(' len(lst_stay) == 0')
-        
-    
+
     return True, lst_mem, lst_stay
 
 class UserData:
@@ -62,7 +58,7 @@ class UserData:
 
     def get_stay_data(self):
         return read_data_xlsx(self.filename, 'stay')
-    
+
 import sys
 import random
 from PySide2.QtWidgets import (QApplication, QLabel, QPushButton, QVBoxLayout, QWidget)
@@ -101,7 +97,7 @@ class MyWidget(QtWidgets.QWidget):
         box_button2.addWidget(self.bt_fill_member)
         self.bt_fill_member.setVisible(False)
 
-        
+
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addLayout(box_button)
         self.layout.addLayout(box_button2)
@@ -123,9 +119,6 @@ class MyWidget(QtWidgets.QWidget):
         self.text_status.setText('正在檢查版本 ...')
         QtCore.QTimer.singleShot(200, self.check_version)
 
-        
-        
-
     def set_window_title(self, strversion):
         self.setWindowTitle(PROG_NAME + '(commit id): ' + strversion)
 
@@ -134,11 +127,13 @@ class MyWidget(QtWidgets.QWidget):
         out = desc + '<br>(' + local_id.decode("utf-8").rstrip() + ')'
         print(out)
         self.text_status.setText(out)
-        
 
     def run_fill_member(self):
         if self.obj_auto != None:
-            self.obj_auto.run_fill_form_member()
+            if self.dict_arg['auto_fill_member_list_at_start_for_demo']:
+                self.obj_auto.run_fill_form_member(b_refilled = 1)
+            else:
+                self.obj_auto.run_fill_form_member(b_refilled = 0)
 
     def update_status(self, strStatus):
         print(strStatus)
@@ -148,28 +143,26 @@ class MyWidget(QtWidgets.QWidget):
         self.update_status('玉山國家公園')
         self.dict_arg['park'] = 0
         self.run()
-        
 
     def run_taroko(self):
         self.update_status('太魯閣國家公園')
         self.dict_arg['park'] = 1
         self.run()
-        
 
     def run_sheipa(self):
         self.update_status('雪霸國家公園')
         self.dict_arg['park'] = 2
         self.run()
-        
+
 
     def run(self):
         try:
             self.load_memlst()
             ok, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
             if not ok: print('Error: utl_read_data failure'); return
-            
-            reply = QMessageBox.question(self, 'Continue?', 
-                    '<html> <p style="font-size:16pt"> 是否現在要自動填入隊員資料? <br> (請放心! 選擇 No, 稍後還可以自動填入隊員資料) </p></html>', QMessageBox.Yes, QMessageBox.No)
+
+            reply = QMessageBox.question(self, 'Continue?',
+                    '<html> <p style="font-size:16pt"> 自動填入隊員資料? (稍後可重複動作) </p></html>', QMessageBox.Yes, QMessageBox.No)
 
             if reply == QMessageBox.Yes:
                 print('reply = ', 'Yes')
@@ -177,7 +170,7 @@ class MyWidget(QtWidgets.QWidget):
             else:
                 print('reply = ', 'NO')
                 self.dict_arg['auto_fill_member_list_at_start_for_demo'] = False
-            
+
             print('reply = ', reply)
 
             self.obj_auto = ParkAuto(self.dict_arg, lst_mem, lst_stay)
@@ -187,17 +180,22 @@ class MyWidget(QtWidgets.QWidget):
             # show re-fill member button only when obj_auto_run exist
             self.bt_fill_member.setVisible(True)
             self.update_status('完成. <br> 右側按鈕: 可以自動填入隊員資料')
+
+            reply = QMessageBox.question(self, 'Continue?',
+                    '<html> <p style="font-size:16pt"> 請修改自己的行程 <br> 完成修改後, 點選自動填入隊員資料 </p></html>', QMessageBox.Yes, QMessageBox.No)
+
+
         except Exception as e:
             import traceback
             traceback.print_exc()
 
-            msg = '\n\n查閱上方錯誤訊息, 進行檢測. 大多是下面的問題, 處理完就能順利執行了.\n\n1.請確定你的機器是否連上網際網路\n2.瀏覽器是否已經被關閉了\n3.有可能是瀏覽器版本太舊了, 請更新你的瀏覽器版本.\n\n'.format(format(e))
+            msg = '\n\n查閱上方錯誤訊息, 進行檢測.\n\n1.請確定你的機器是否連上網際網路\n2.瀏覽器是否已經被關閉了\n3.有可能是瀏覽器版本太舊了, 請更新你的瀏覽器版本.\n\n'.format(format(e))
             print(msg)
             msg = '更新 Chrome 最新版本的指令:\nUbuntu:\n{}'.format('sudo apt-get --only-upgrade install google-chrome-stable')
             print(msg)
 
             return
-    
+
     def load_memlst(self):
         print('load')
         fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Member Data', '.', selectedFilter='*.xlsx')
@@ -239,7 +237,7 @@ def check_update():
         else:
             desc = '版本檢查: Diverged'
             return 3, desc
-        
+
     except subprocess.CalledProcessError:
         desc = '版本檢查: [Error] Unable to get git information'
         return 4, desc, local

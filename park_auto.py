@@ -16,12 +16,13 @@ class ParkAuto:
         print('Start Taiwan National Park Automation ')
         self.park = dict_arg['park']
         self.auto_fill_member_list_at_start_for_demo = dict_arg['auto_fill_member_list_at_start_for_demo']
+        self.WAIT_COMBOX_in_sec = 0.5
 
         count_member = len(lst_mem)
 
         # team
         self.dict_team = {
-            'name': '平安喜樂',
+            'name': '平安喜樂開心',
             'climbline_main_idx': 1,       # 主路線 (default idx)
             'climbline_sub_idx': 1,        # 次路線 (default idx)
             'total_day': 1,                # 總天數 (default)
@@ -49,8 +50,8 @@ class ParkAuto:
         self.browser.click_id('chk[]')  # 本人已閱讀並充分瞭解上述注意事項，並會遵守國家公園各項規定
         self.browser.click_id('ContentPlaceHolder1_btnagree')
 
-    def run_fill_form_member(self):
-        self.fill_form_member(self.id_tab_member)
+    def run_fill_form_member(self, b_refilled):
+        self.fill_form_member(self.id_tab_member, b_refilled)
 
     def apply(self):
         self.fill_form_schedule(self.id_tab_schedule)
@@ -59,7 +60,7 @@ class ParkAuto:
 
         print('apply')
         if self.auto_fill_member_list_at_start_for_demo:
-            self.run_fill_form_member()
+            self.run_fill_form_member(b_refilled=0)
 
         self.fill_form_stay(self.id_tab_stay)
 
@@ -82,6 +83,7 @@ class ParkAuto:
         self.browser.click('雪霸國家公園')
         self.browser.click_id('chk[]0') # 請申請人瞭解所填具之隊員資料與行程計畫等，如明知為不實或冒用他人資料填載入園申請之事項，將渉犯刑法第210條偽造文書罪嫌，或刑法第214條使公務員登載不實罪嫌，本處將依法先予以退件處理，並立即將申請人停權處分，另將涉案相關資料向司法機關依法告發
         self.browser.click_id('chk[]9') # 攀登路線如為B、C、C+級者，申請人及領隊應確認全體隊員均分別符合A、B、C級登山經驗能力才能申請，雪季期間另依公告辦理。
+        # self.browser.click_id('chk[]10')
         self.ok()
         self.apply()
 
@@ -126,7 +128,7 @@ class ParkAuto:
         self.browser.click_id('ContentPlaceHolder1_applycheck') # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令
 
         # leader
-        self._fill_member_detail(0, dict_id, self.lst_mem)
+        self._fill_member_detail(0, dict_id, self.lst_mem, 0)
 
         # verify
         self.browser.click_id(id_tab_applyer)
@@ -137,7 +139,7 @@ class ParkAuto:
         self.browser.click_id(id_tab_leader)
         self.browser.click_id(id_leader)
 
-    def fill_form_member(self, id_tab_member):
+    def fill_form_member(self, id_tab_member, b_refilled):
         id_confirm = 'ContentPlaceHolder1_member_keytype' # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令。
         self.browser.click_id(id_tab_member)
 
@@ -163,40 +165,36 @@ class ParkAuto:
 
         lst_mem = self.lst_mem
         for i in range(1, len(lst_mem)):
-            self._fill_member_detail(i, dict_id, lst_mem)
+            self._fill_member_detail(i, dict_id, lst_mem, b_refilled)
 
-
-         # verify
-        # id_confirm = 'ContentPlaceHolder1_member_keytype' # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令。
-        # self.browser.click_id(id_tab_member)
-        # self.browser.click_id(id_confirm)
-        # print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
-        # self.browser.handle_alert_popup()
-
+        # verify
         for i in range(1, len(lst_mem)):
             ok, set_failure_key, msg = self._fill_member_detail_verify(i, dict_id, self.lst_mem)
 
-    def _fill_member_detail(self, i, dict_id, lst_mem):
+    def _fill_member_detail(self, i, dict_id, lst_mem, b_refilled):
         self.browser.speed_up()
         if i == 0:
             strIdx = ''
         else:
             strIdx = '_' + str(i - 1)
-        self.browser.fill_text(dict_id['id_name']+strIdx, lst_mem[i]['id_name'])
-        self.browser.fill_text(dict_id['id_tel']+strIdx, lst_mem[i]['id_tel']) # 電話
-        self.browser.fill_text(dict_id['id_country']+strIdx, lst_mem[i]['id_country']) # contry
-        self.browser.fill_text(dict_id['id_city']+strIdx, lst_mem[i]['id_city']) # city
-        self.browser.fill_text(dict_id['id_address']+strIdx, lst_mem[i]['id_address']) # address
-        self.browser.fill_text(dict_id['id_mobile']+strIdx, lst_mem[i]['id_mobile']) # mobile
+        self.browser.fill_text(dict_id['id_name']+strIdx, lst_mem[i]['id_name'], b_refilled)
+        self.browser.fill_text(dict_id['id_tel']+strIdx, lst_mem[i]['id_tel'], b_refilled) # 電話
+        self.browser.fill_text(dict_id['id_country']+strIdx, lst_mem[i]['id_country'], b_refilled) # contry
+        time.sleep(self.WAIT_COMBOX_in_sec) # 因為前面是下拉, 所以要等一下, 讓下拉收回去
+        self.browser.fill_text(dict_id['id_city']+strIdx, lst_mem[i]['id_city'], b_refilled) # city
+        time.sleep(self.WAIT_COMBOX_in_sec) # 因為前面是下拉, 所以要等一下, 讓下拉收回去
+        self.browser.fill_text(dict_id['id_address']+strIdx, lst_mem[i]['id_address'], b_refilled) # address
+        self.browser.fill_text(dict_id['id_mobile']+strIdx, lst_mem[i]['id_mobile'], b_refilled) # mobile
         if  i == 0:
-            self.browser.fill_text(dict_id['id_fax']+strIdx, lst_mem[i]['id_fax'])
-        self.browser.fill_text(dict_id['id_email']+strIdx, lst_mem[i]['id_email']) # email
-        self.browser.fill_text(dict_id['id_pid_nation']+strIdx, lst_mem[i]['id_pid_nation'])
-        self.browser.fill_text(dict_id['id_pid_num']+strIdx, lst_mem[i]['id_pid_num'])
-        self.browser.fill_text(dict_id['id_sex']+strIdx, lst_mem[i]['id_sex'])
+            self.browser.fill_text(dict_id['id_fax']+strIdx, lst_mem[i]['id_fax'], b_refilled)
+        self.browser.fill_text(dict_id['id_email']+strIdx, lst_mem[i]['id_email'], b_refilled) # email
+        self.browser.fill_text(dict_id['id_pid_nation']+strIdx, lst_mem[i]['id_pid_nation'], b_refilled)
+        time.sleep(self.WAIT_COMBOX_in_sec) # 因為前面是下拉, 所以要等一下, 讓下拉收回去
+        self.browser.fill_text(dict_id['id_pid_num']+strIdx, lst_mem[i]['id_pid_num'], b_refilled)
+        self.browser.fill_text(dict_id['id_sex']+strIdx, lst_mem[i]['id_sex'], b_refilled)
         self.browser.set_yyyymmdd(dict_id['id_birthday']+strIdx, lst_mem[i]['id_birthday_yyyy'],lst_mem[i]['id_birthday_mm'],lst_mem[i]['id_birthday_dd'])
-        self.browser.fill_text(dict_id['id_contact_name']+strIdx, lst_mem[i]['id_contact_name'])
-        self.browser.fill_text(dict_id['id_contact_tel']+strIdx, lst_mem[i]['id_contact_tel'])
+        self.browser.fill_text(dict_id['id_contact_name']+strIdx, lst_mem[i]['id_contact_name'], b_refilled)
+        self.browser.fill_text(dict_id['id_contact_tel']+strIdx, lst_mem[i]['id_contact_tel'], b_refilled)
         self.browser.speed_init()
 
         return 1, 'ok'
@@ -232,16 +230,16 @@ class ParkAuto:
                     print('try again... str_key = {}, data = {}'.format(str_key, lst_mem[i][str_key]))
                     time.sleep(2)
                     try:
-                        self.browser.fill_text(dict_id[str_key]+strIdx, lst_mem[i][str_key])
+                        self.browser.fill_text(dict_id[str_key]+strIdx, lst_mem[i][str_key], 1)
                     except TimeoutException as e:
                         import traceback
                         traceback.print_exc()
-                        print('Exception: ' + str(e)) 
+                        print('Exception: ' + str(e))
 
                     try_num = try_num + 1
                     ii = ii - 1
                     continue
-                    
+
                 else:
                     print('--------------------> {} checked, {} pass.'.format(str_key, lst_mem[i][str_key]))
 
@@ -260,8 +258,8 @@ class ParkAuto:
         self.browser.speed_up()
         lst_mem = self.lst_stay
         i = 0
-        self.browser.fill_text(dict_id['id_name'], lst_mem[i]['id_name'])
-        self.browser.fill_text(dict_id['id_mobile'], lst_mem[i]['id_tel']) # 電話
-        self.browser.fill_text(dict_id['id_email'], lst_mem[i]['id_email']) # email
+        self.browser.fill_text(dict_id['id_name'], lst_mem[i]['id_name'], 0)
+        self.browser.fill_text(dict_id['id_mobile'], lst_mem[i]['id_tel'], 0) # 電話
+        self.browser.fill_text(dict_id['id_email'], lst_mem[i]['id_email'], 0) # email
 
         self.browser.speed_init()
