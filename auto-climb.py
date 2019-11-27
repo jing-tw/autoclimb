@@ -127,6 +127,8 @@ class MyWidget(QtWidgets.QWidget):
         out = desc + '<br>(' + local_id.decode("utf-8").rstrip() + ')'
         print(out)
         self.text_status.setText(out)
+        reply = QMessageBox.question(self, '訊息',
+                    '<html> <p style="font-size:16pt"> ' + desc + '</p></html>', QMessageBox.Ok)
 
     def run_fill_member(self):
         if self.obj_auto != None:
@@ -181,7 +183,7 @@ class MyWidget(QtWidgets.QWidget):
             self.bt_fill_member.setVisible(True)
             self.update_status('完成. <br> 右側按鈕: 可以自動填入隊員資料')
 
-            reply = QMessageBox.question(self, '訊息'',
+            reply = QMessageBox.question(self, '訊息',
                     '<html> <p style="font-size:16pt"> 請修改自己的行程 <br> 完成修改後, 點選自動填入隊員資料 </p></html>', QMessageBox.Ok)
 
 
@@ -224,22 +226,22 @@ def check_update():
         comm_base = subprocess.check_output('git merge-base @ @{u}'.split()) # return comm id
 
         if local == remote:
-            desc = '版本檢查: 目前是最新版'
+            desc = '版本檢查:<br>目前是最新版'
             return 0, desc, local
         elif local == comm_base:
-            desc = '版本檢查: 發現有新版本, 可執行 git pull 更新'
+            desc = '版本檢查:<br>這個工具已經有新版本發布, 請到命令列執行 git pull 更新'
             return 1, desc, local
 
         elif remote == comm_base:
-            desc = '版本檢查: Need to push'
+            desc = '版本檢查:<br>Need to push'
             return 2, desc, local
 
         else:
-            desc = '版本檢查: Diverged'
+            desc = '版本檢查:<br>Diverged'
             return 3, desc
 
     except subprocess.CalledProcessError:
-        desc = '版本檢查: [Error] Unable to get git information'
+        desc = '版本檢查:<br>[Error] Unable to get git information'
         return 4, desc, local
 
 def init_arg():
