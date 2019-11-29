@@ -130,9 +130,9 @@ class ParkAuto:
         # leader
         self._fill_member_detail(0, dict_id, self.lst_mem, 0)
 
-        # verify
-        self.browser.click_id(id_tab_applyer)
-        ok, set_failure_key, msg = self._fill_member_detail_verify(0, dict_id, self.lst_mem)
+        # # verify
+        # self.browser.click_id(id_tab_applyer)
+        # ok, set_failure_key, msg = self._fill_member_detail_verify(0, dict_id, self.lst_mem)
 
     def fill_form_leader(self, id_tab_leader):
         id_leader = 'ContentPlaceHolder1_copyapply'
@@ -167,9 +167,9 @@ class ParkAuto:
         for i in range(1, len(lst_mem)):
             self._fill_member_detail(i, dict_id, lst_mem, b_refilled)
 
-        # verify
-        for i in range(1, len(lst_mem)):
-            ok, set_failure_key, msg = self._fill_member_detail_verify(i, dict_id, self.lst_mem)
+        # # verify
+        # for i in range(1, len(lst_mem)):
+        #     ok, set_failure_key, msg = self._fill_member_detail_verify(i, dict_id, self.lst_mem)
 
     def _fill_member_detail(self, i, dict_id, lst_mem, b_refilled):
         self.browser.speed_up()

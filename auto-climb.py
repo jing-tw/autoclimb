@@ -124,7 +124,7 @@ class MyWidget(QtWidgets.QWidget):
 
     def check_version(self):
         res, desc, local_id = check_update()
-        out = desc + '<br>(' + local_id.decode("utf-8").rstrip() + ')'
+        out = desc + '(' + local_id.decode("utf-8").rstrip() + ')'
         print(out)
         self.text_status.setText(out)
         reply = QMessageBox.question(self, '訊息',
@@ -183,8 +183,9 @@ class MyWidget(QtWidgets.QWidget):
             self.bt_fill_member.setVisible(True)
             self.update_status('完成. <br> 右側按鈕: 可以自動填入隊員資料')
 
+            self.activateWindow()  # show the control panel
             reply = QMessageBox.question(self, '訊息',
-                    '<html> <p style="font-size:16pt"> 請修改自己的行程 <br> 完成修改後, 點選自動填入隊員資料 </p></html>', QMessageBox.Ok)
+                    '<html> <p style="font-size:16pt"> 請修改自己的行程 <br> 完成修改後, 點選 [自動填入隊員資料] 按鈕 </p></html>', QMessageBox.Ok)
 
 
         except Exception as e:
@@ -226,7 +227,7 @@ def check_update():
         comm_base = subprocess.check_output('git merge-base @ @{u}'.split()) # return comm id
 
         if local == remote:
-            desc = '版本檢查:<br>目前是最新版'
+            desc = '版本檢查: 目前是最新版'
             return 0, desc, local
         elif local == comm_base:
             desc = '版本檢查:<br>這個工具已經有新版本發布, 請到命令列執行 git pull 更新'
