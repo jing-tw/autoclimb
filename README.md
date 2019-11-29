@@ -1,7 +1,16 @@
 # Auto-climb
 ## 國家公園入山入園證
-這個工具協助你自動填寫線上申請單的領隊與隊員的資料, 對於經常登山的你, 不用再一次又一次的填寫隊員資料.
 [![N|Solid](https://4.bp.blogspot.com/-DAIv22gkCfc/XKG1TTMJ0UI/AAAAAAAAeE4/qddEt243nTwt-7AgdTKqJzb0R897nOG4wCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B14-50-36.png)](https://4.bp.blogspot.com/-DAIv22gkCfc/XKG1TTMJ0UI/AAAAAAAAeE4/qddEt243nTwt-7AgdTKqJzb0R897nOG4wCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B14-50-36.png)
+
+這個工具協助你自動填寫線上申請單的領隊與隊員的資料, 對於經常登山的你, 不用再一次又一次的填寫隊員資料.
+## 支援功能
+- 玉山國家公園自動填表
+- 太魯閣國家公園自動填表
+- 雪霸國家公園自動填表
+
+## 版權
+- 歡迎任意非商業或商業自由使用工具, 但請加註來源與作者
+- 商業用途之原始碼修改: 請遵循 GPL 規範 (或與作者聯繫, 井民全, mqjing@gmail.com)
 
 ## 先看 video
 https://www.youtube.com/watch?v=yR8WyEA48cw
@@ -68,10 +77,8 @@ https://github.com/jing-tw/autoclimb/issues or mqjing@gmail.com
 
 License
 ----
-MIT
+GPL
 
-
-歡迎一起開發 
 
 Enjoy!
 by Jing.
