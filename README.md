@@ -10,7 +10,7 @@
 
 ## 版權
 - 歡迎任意非商業或商業自由使用工具, 但請加註來源與作者
-- 商業用途之原始碼修改: 請遵循 GPL 規範 (或與作者聯繫, 井民全, mqjing@gmail.com)
+- 商業用途之原始碼修改: 遵循 GPL 規範
 
 ## 先看 video
 https://www.youtube.com/watch?v=yR8WyEA48cw
@@ -23,6 +23,11 @@ sample_9_people.xlsx   (建議另存新檔, 每一次登山活動都存一個 xl
 ## 安裝執行環境
 ### Install Chrome (確定安裝最新版)
 https://www.google.com/chrome/
+```sh
+for Linux
+# 直接使用下面的指令, 就會直接升級你的 chrome browser
+$ sudo apt-get --only-upgrade install google-chrome-stable
+```
 
 ### 安裝與設定 Python
 #### ( a ) Insatll Anaconda
