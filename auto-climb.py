@@ -79,7 +79,9 @@ class MyWidget(QtWidgets.QWidget):
         self.bt_yushan = PicButton(QPixmap('./res/img/Yushan.png'))
         self.bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
         self.bt_sheipa = PicButton(QPixmap('./res/img/Sheipa.png'))
-        self.bt_fill_member = QPushButton('自動填入成員資料')
+        self.bt_fill_member = PicButton(QPixmap('./res/img/member_auto.png'))
+        #self.bt_fill_member = QPushButton('自動填入成員資料')
+
 
         # add status label
         self.text_status = QtWidgets.QLabel("Status")
@@ -210,7 +212,7 @@ class MyWidget(QtWidgets.QWidget):
         sg = QDesktopWidget().screenGeometry()
 
         widget = self.geometry()
-        x = sg.width()/2 - widget.width()/2
+        x = sg.width()/2 - widget.width()/2 + sg.width()/6
         y = sg.height()/2 - widget.height()/2
         self.move(x, y)
 
