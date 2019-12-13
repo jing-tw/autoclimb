@@ -10,11 +10,11 @@
 - 太魯閣國家公園自動填表
 - 雪霸國家公園自動填表
 
-## 台灣國家公園入園入山線上申請服務網 (自動填寫的目標系統)
+## 台灣國家公園入園入山線上申請服務網 (國家公園伺服器網址)
 https://npm.cpami.gov.tw/apply_1.aspx
 
 ## 版權
-- 歡迎任意非商業或商業自由使用工具, 但請加註來源與作者
+- 歡迎任意散佈自由使用工具, 但請加註來源與作者
 - 商業用途之原始碼修改: 遵循 GPL 規範
 
 ## 先看 video
@@ -32,6 +32,11 @@ https://www.google.com/chrome/
 for Linux
 # 直接使用下面的指令, 就會直接升級你的 chrome browser
 $ sudo apt-get --only-upgrade install google-chrome-stable
+```
+```sh
+for Windows or MacOS
+# 直接到下面網址, 升級你的 chrome browser
+https://www.google.com/chrome/
 ```
 
 ### 安裝與設定 Python
