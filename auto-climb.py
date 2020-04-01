@@ -86,6 +86,9 @@ class MyWidget(QtWidgets.QWidget):
         # add status label
         self.text_status = QtWidgets.QLabel("Status")
         self.text_status.setAlignment(QtCore.Qt.AlignCenter)
+        font = self.text_status.font()
+        font.setPointSize(14)
+        self.text_status.setFont(font)
 
         # layout: upper
         box_button = QtWidgets.QHBoxLayout()
@@ -126,7 +129,7 @@ class MyWidget(QtWidgets.QWidget):
 
     def check_version(self):
         res, desc, local_id = check_update()
-        out = desc + '(' + local_id.decode("utf-8").rstrip() + ')'
+        out = desc + '<div align=\"left\">' + '版本號碼:' + local_id.decode("utf-8").rstrip() + '.</div>'
         print(out)
         self.text_status.setText(out)
         reply = QMessageBox.question(self, '訊息',
@@ -229,22 +232,22 @@ def check_update():
         comm_base = subprocess.check_output('git merge-base @ @{u}'.split()) # return comm id
 
         if local == remote:
-            desc = '版本檢查: 目前是最新版'
+            desc = '<div align=\"left\"><br>目前是最新版.</div>'
             return 0, desc, local
         elif local == comm_base:
-            desc = '版本檢查:<br>這個工具已經有新版本發布, 請到命令列執行 git pull 更新'
+            desc = '<div align=\"left\">版本檢查:<br>這個工具已經有新版本發布, 請到命令列執行 git pull 更新.</div>'
             return 1, desc, local
 
         elif remote == comm_base:
-            desc = '版本檢查:<br>Need to push'
+            desc = '<div align=\"left\">版本檢查:<br>Local changed. Require git push.</div>'
             return 2, desc, local
 
         else:
-            desc = '版本檢查:<br>Diverged'
+            desc = '<div align=\"left\">版本檢查:<br>Source diverged</div>'
             return 3, desc
 
     except subprocess.CalledProcessError:
-        desc = '版本檢查:<br>[Error] Unable to get git information'
+        desc = '<div align=\"left\">版本檢查:<br>[Error] Unable to get git information</div>'
         return 4, desc, local
 
 def init_arg():

@@ -1,6 +1,7 @@
 
 import time
 from browser_auto import BrowserAuto
+from selenium.common.exceptions import TimeoutException
 
 class ParkAuto:
     name_park = {}
@@ -22,7 +23,7 @@ class ParkAuto:
 
         # team
         self.dict_team = {
-            'name': '平安喜樂開心',
+            'name': 'Len',
             'climbline_main_idx': 1,       # 主路線 (default idx)
             'climbline_sub_idx': 1,        # 次路線 (default idx)
             'total_day': 1,                # 總天數 (default)
@@ -68,13 +69,18 @@ class ParkAuto:
     def _Yushan(self):
         self.curPark = 'Yushan'
         self.browser.click('玉山國家公園')
+        self.browser.click_id('chk[]15')# 領隊已明確告知以下相關事項：
+                                        #    1.隊伍成員如為中央流行疫情指揮中心公告之「符合通報定義」之人員(詳見:https://www.cdc.gov.tw)，應自行取消入園。
+                                        #    2.隊伍成員入園前若有發燒、呼吸道不適或嚴重咳嗽者等症狀，應自行取消入園。
+                                        #    3.隊伍所有成員應加強自主健康管理，入園之後如有疑似相關症狀發生，應使用口罩或足可遮掩口鼻物品進入山屋，保護自己也尊重他人。。
         self.ok()
         self.apply()
 
     def _Taroko(self):
         self.curPark = 'Taroko'
         self.browser.click('太魯閣國家公園')
-        self.browser.click_id('chk[]10') # 確認已於申請前詳閱並明瞭「 錐麓古道入園收費須知」，現場購票與入園查核時間每日上午7時~上午10時止，並轉知全體隊員
+        self.browser.click_id('chk[]10')# 確認已於申請前詳閱並明瞭「 錐麓古道入園收費須知」，現場購票與入園查核時間每日上午7時~上午10時止，並轉知全體隊員
+        self.browser.click_id('chk[]11')# 隊伍所有成員於入園前一日皆「非」中央疫情指揮中心所公告居家隔離、居家檢疫及自主健康管理之人員。(詳見:https://www.cdc.gov.tw)。
         self.ok()
         self.apply()
 
@@ -83,7 +89,9 @@ class ParkAuto:
         self.browser.click('雪霸國家公園')
         self.browser.click_id('chk[]0') # 請申請人瞭解所填具之隊員資料與行程計畫等，如明知為不實或冒用他人資料填載入園申請之事項，將渉犯刑法第210條偽造文書罪嫌，或刑法第214條使公務員登載不實罪嫌，本處將依法先予以退件處理，並立即將申請人停權處分，另將涉案相關資料向司法機關依法告發
         self.browser.click_id('chk[]9') # 攀登路線如為B、C、C+級者，申請人及領隊應確認全體隊員均分別符合A、B、C級登山經驗能力才能申請，雪季期間另依公告辦理。
-        self.browser.click_id('chk[]10')# 單人獨攀通知: 單人獨攀隊伍(者)應確實規劃登山計畫與風險評估，包含宿營地點.時間. 糧食. 飲水與裝備等， 並辦妥登山或旅遊保險，且攜帶衛星電話、GPS或有效之定位器材。另請依照路線地形審酌攜帶確保繩及安全頭盔等特殊裝備。獨攀者應定期向留守人作安全回報(留守人必須是有效留守)， 如本人未依登山計畫時間下山，也已交代留守人於第一時間通知管理處或消防單位以確保救援時效
+        self.browser.click_id('chk[]10')# 欲申請雪山西稜線之隊伍，請於申請前詳閱230林道注意事項
+        self.browser.click_id('chk[]11')# 單人獨攀通知: 單人獨攀隊伍(者)應確實規劃登山計畫與風險評估，包含宿營地點.時間. 糧食. 飲水與裝備等， 並辦妥登山或旅遊保險，且攜帶衛星電話、GPS或有效之定位器材。另請依照路線地形審酌攜帶確保繩及安全頭盔等特殊裝備。獨攀者應定期向留守人作安全回報(留守人必須是有效留守)， 如本人未依登山計畫時間下山，也已交代留守人於第一時間通知管理處或消防單位以確保救援時效
+        self.browser.click_id('chk[]12')# 隊伍所有成員於入園前一日皆「非」中央疫情指揮中心所公告居家隔離、居家檢疫及自主健康管理之人員。(詳見:https://www.cdc.gov.tw)。
         self.ok()
         self.apply()
 
@@ -222,7 +230,7 @@ class ParkAuto:
                     restart = 0
                 ok, msg = self.browser.fill_text_verify(dict_id[str_key]+strIdx, lst_mem[i][str_key])
                 if not ok:
-                    msg = '{} checked, failure.\nmsg = '.format(str_key, msg)
+                    msg = '{} checked, failure.\nmsg = {}'.format(str_key, msg)
                     ok = 0
                     print(msg)
                     set_failure_key.add(str_key)
