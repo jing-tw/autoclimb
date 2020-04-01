@@ -1,0 +1,3 @@
+[MASTER]
+extension-pkg-whitelist=PySide2 #Pylint doesn't load any C extensions by default, because those can run arbitrary code. 
+disable=line-too-long, broad-except
