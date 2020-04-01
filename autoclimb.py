@@ -12,7 +12,7 @@ from PySide2.QtGui import QPixmap
 from ui_button import PicButton
 from park_auto import ParkAuto
 
-PROG_NAME = 'auto_climb.py'
+PROG_NAME = 'autoclimb.py'
 DEFAULT_GUI = 1
 DEFAULT_PARK = 2
 DEFAULT_MEMBERLIST = 'sample.xlsx'
