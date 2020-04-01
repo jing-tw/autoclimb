@@ -278,6 +278,7 @@ class ParkAuto:
         dict_id = {}
         pre = 'ContentPlaceHolder1' + '_stay'
         dict_id['id_name'] = pre + '_name'
+        dict_id['id_tel'] = pre + '_tel'
         dict_id['id_mobile'] = pre + '_mobile'
         dict_id['id_email'] = pre + '_email'
 
@@ -285,7 +286,9 @@ class ParkAuto:
         lst_mem = self.lst_stay
         i = 0
         self.browser.fill_text(dict_id['id_name'], lst_mem[i]['id_name'], 0)
-        self.browser.fill_text(dict_id['id_mobile'], lst_mem[i]['id_tel'], 0) # 電話
+        if self.cur_park != 'Yushan':
+            self.browser.fill_text(dict_id['id_tel'], lst_mem[i]['id_tel'], 0) # 電話
+        self.browser.fill_text(dict_id['id_mobile'], lst_mem[i]['id_tel'], 0) # 手機
         self.browser.fill_text(dict_id['id_email'], lst_mem[i]['id_email'], 0) # email
 
         self.browser.speed_init()
