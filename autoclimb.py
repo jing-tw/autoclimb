@@ -4,80 +4,27 @@ The main module to run auto fill data progrom.
 import sys
 import subprocess
 import traceback
-import pandas as pd
+
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QDesktopWidget, QMessageBox
-from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPixmap
 from ui_button import PicButton
 from park_auto import ParkAuto
+from autotest_layer_widget import AutoTestLayerWidget
+from utility_io import util_read_data_xlsx, utl_read_data
 
 PROG_NAME = 'autoclimb.py'
 DEFAULT_GUI = 1
 DEFAULT_PARK = 2
 DEFAULT_MEMBERLIST = 'sample.xlsx'
 
-def util_read_data_xlsx(filename, sheet):
-    ''' Utility to read member data from Excel file.
-    '''
-    if filename.split('.')[1] == 'xlsx':
-        data_frame = pd.read_excel(filename, sheet, dtype='str')
-    else:
-        return False, None
-
-    list_data = []
-    for i in data_frame.index:
-        dict_data = {}
-        for key in data_frame.columns:
-            dict_data[key] = data_frame[key][i]
-        list_data.append(dict_data)
-
-    return True, list_data
-
-def utl_read_data(filename):
-    ''' Utility to read member data from file.
-    '''
-    print('read file ', filename)
-    def ret_error(title):
-        print('Error: ', title)
-        return False, None, None
-
-    obj_data = UserData(filename)
-    b_ok, lst_mem = obj_data.get_member_list()
-    if not b_ok:
-        return ret_error(' get_member_list failure')
-    if len(lst_mem) == 0:
-        return ret_error(' len(lst_mem) == 0')
-
-    b_ok, lst_stay = obj_data.get_stay_data()
-    if not b_ok:
-        return ret_error(' get_stay_data failure')
-    if len(lst_stay) == 0:
-        return ret_error(' len(lst_stay) == 0')
-    return True, lst_mem, lst_stay
-class UserData:
-    ''' Management the user data.
-    '''
-    def __init__(self, filename):
-        self.filename = filename
-
-    def get_member_list(self):
-        '''Return the member list.
-        '''
-        return util_read_data_xlsx(self.filename, 'member')
-
-    def get_stay_data(self):
-        '''Return the contact person information.
-        '''
-        return util_read_data_xlsx(self.filename, 'stay')
-
-class AutoClimbWidget(QWidget):
+class AutoClimbWidget(AutoTestLayerWidget):
     '''The main window widget.
     '''
     def __init__(self):
-        super().__init__()
+        super().__init__(None)
         self.obj_auto = None
         self.bt_fill_member = None
         self.text_status = None
@@ -89,6 +36,10 @@ class AutoClimbWidget(QWidget):
         bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
         bt_sheipa = PicButton(QPixmap('./res/img/Sheipa.png'))
         self.bt_fill_member = PicButton(QPixmap('./res/img/member_auto.png'))
+
+        self.autotest_add(bt_yushan, 'bt_yushan')
+        self.autotest_add(bt_taroko, 'bt_taroko')
+        self.autotest_add(bt_sheipa, 'bt_sheipa')
 
         # add status label
         self.text_status = QLabel("Status")
