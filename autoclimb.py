@@ -6,9 +6,11 @@ import subprocess
 import traceback
 import pandas as pd
 
-from PySide2 import QtCore, QtWidgets
-from PySide2.QtWidgets import QDesktopWidget, QMessageBox
-from PySide2.QtGui import QPixmap
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QDesktopWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtGui import QPixmap
 from ui_button import PicButton
 from park_auto import ParkAuto
 
@@ -18,8 +20,7 @@ DEFAULT_PARK = 2
 DEFAULT_MEMBERLIST = 'sample.xlsx'
 
 def util_read_data_xlsx(filename, sheet):
-    '''
-    Utility to read member data from Excel file.
+    ''' Utility to read member data from Excel file.
     '''
     if filename.split('.')[1] == 'xlsx':
         data_frame = pd.read_excel(filename, sheet, dtype='str')
@@ -36,8 +37,7 @@ def util_read_data_xlsx(filename, sheet):
     return True, list_data
 
 def utl_read_data(filename):
-    '''
-    Utility to read member data from file.
+    ''' Utility to read member data from file.
     '''
     print('read file ', filename)
     def ret_error(title):
@@ -58,32 +58,32 @@ def utl_read_data(filename):
         return ret_error(' len(lst_stay) == 0')
     return True, lst_mem, lst_stay
 class UserData:
-    '''
-    Management the user data.
+    ''' Management the user data.
     '''
     def __init__(self, filename):
         self.filename = filename
 
     def get_member_list(self):
-        '''
-        Return the member list.
+        '''Return the member list.
         '''
         return util_read_data_xlsx(self.filename, 'member')
 
     def get_stay_data(self):
-        '''
-        Return the contact person information.
+        '''Return the contact person information.
         '''
         return util_read_data_xlsx(self.filename, 'stay')
 
-class MainWidget(QtWidgets.QWidget):
-    '''
-    The main window widget.
+class AutoClimbWidget(QWidget):
+    '''The main window widget.
     '''
     def __init__(self):
         super().__init__()
         self.obj_auto = None
+        self.bt_fill_member = None
+        self.text_status = None
+        self.dict_arg = None
 
+    def __init_ui__(self):
         # add button
         bt_yushan = PicButton(QPixmap('./res/img/Yushan.png'))
         bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
@@ -91,7 +91,7 @@ class MainWidget(QtWidgets.QWidget):
         self.bt_fill_member = PicButton(QPixmap('./res/img/member_auto.png'))
 
         # add status label
-        self.text_status = QtWidgets.QLabel("Status")
+        self.text_status = QLabel("Status")
         self.text_status.setAlignment(QtCore.Qt.AlignCenter)
         font = self.text_status.font()
         font.setPointSize(14)
@@ -145,9 +145,9 @@ class MainWidget(QtWidgets.QWidget):
     def __run_fill_member__(self):
         if self.obj_auto is not None:
             if self.dict_arg['auto_fill_member_list_at_start_for_demo']:
-                self.obj_auto.run_fill_form_member(b_refilled=1)
+                self.obj_auto.fill_member(b_refilled=1)
             else:
-                self.obj_auto.run_fill_form_member(b_refilled=0)
+                self.obj_auto.fill_member(b_refilled=0)
 
     def __update_status__(self, str_status):
         print(str_status)
@@ -169,8 +169,7 @@ class MainWidget(QtWidgets.QWidget):
         self.run()
 
     def run(self):
-        '''
-        Execute the auto fill procedure.
+        '''Execute the auto fill procedure.
         '''
         try:
             self.__load_memlst__()
@@ -213,7 +212,7 @@ class MainWidget(QtWidgets.QWidget):
 
     def __load_memlst__(self):
         print('load')
-        lst_filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Member Data', '.', selectedFilter='*.xlsx')
+        lst_filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', '.', '*.xlsx')
         if lst_filename:
             print(lst_filename[0])
             self.dict_arg['memberlist'] = lst_filename[0]
@@ -254,11 +253,11 @@ def __check_update__():
         return 4, desc, local
 
 def main():
-    '''
-    Main function.
+    ''' Main function.
     '''
     app = QtWidgets.QApplication([])
-    widget = MainWidget()
+    widget = AutoClimbWidget()
+    widget.__init_ui__()
     widget.show()
     sys.exit(app.exec_())
 

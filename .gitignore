@@ -5,7 +5,7 @@
 *.bak
 *.org
 *.xlsx
-.~lock.*
+
 
 local/
 .vscode/

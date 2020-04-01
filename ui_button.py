@@ -1,9 +1,9 @@
 '''
 The picuture button module.
 '''
-from PySide2 import QtGui
-from PySide2.QtWidgets import QAbstractButton
-from PySide2.QtGui import QPainter
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QAbstractButton
+from PyQt5.QtGui import QPainter
 
 class PicButton(QAbstractButton):
     '''
@@ -31,15 +31,14 @@ class PicButton(QAbstractButton):
         painter.drawRect(rec.left(), rec.top(), rec.width(), rec.height())
 
     def enterEvent(self, event):
-        del event
+        #del event
         self.enter = True
         self.update()
 
     def leaveEvent(self, event):
-        del event
+        #del event
         self.enter = False
         self.update()
 
     def sizeHint(self):
         return self.pixmap.size()
-        

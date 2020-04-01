@@ -7,18 +7,22 @@ from selenium.common.exceptions import TimeoutException
 from browser_auto import BrowserAuto
 
 
+class EnumTabID():
+    '''
+    Store the National Park Tab IDs
+    '''
+    id_tab_schedule = 'ContentPlaceHolder1_menu5'
+    id_tab_applyer = 'ContentPlaceHolder1_menu1'
+    id_tab_leader = 'ContentPlaceHolder1_menu2'
+    id_tab_member = 'ContentPlaceHolder1_menu3'
+    id_tab_stay = 'ContentPlaceHolder1_menu4'
+
 class ParkAuto:
     '''
     The class for Taiwan National Park autofill.
     '''
     name_park = {}
     addr_park = 'https://npm.cpami.gov.tw/apply_1.aspx'
-
-    id_tab_schedule = 'ContentPlaceHolder1_menu5'
-    id_tab_applyer = 'ContentPlaceHolder1_menu1'
-    id_tab_leader = 'ContentPlaceHolder1_menu2'
-    id_tab_member = 'ContentPlaceHolder1_menu3'
-    id_tab_stay = 'ContentPlaceHolder1_menu4'
 
     def __init__(self, dict_arg, lst_mem, lst_stay):
         print('Start Taiwan National Park Automation ')
@@ -30,11 +34,11 @@ class ParkAuto:
 
         # team
         self.dict_team = {
-            'name': 'Len',
+            'name': 'Lemna 快樂登山隊',
             'climbline_main_idx': 1,       # 主路線 (default idx)
             'climbline_sub_idx': 1,        # 次路線 (default idx)
             'total_day': 1,                # 總天數 (default)
-            'date_applystart_idx': 1,           # 入園日期 (default idx)
+            'date_applystart_idx': 1,      # 入園日期 (default idx)
             'member_count': count_member,
         }
 
@@ -69,19 +73,17 @@ class ParkAuto:
         '''
         Fill member data.
         '''
-        self.__fill_form_member__(self.id_tab_member, b_refilled)
+        self.__fill_form_member__(EnumTabID.id_tab_member, b_refilled)
 
     def __apply__(self):
-        self.__fill_form_schedule__(self.id_tab_schedule)
-        self.__fill_form_applyer__(self.id_tab_applyer)
-        self.__fill_form_leader__(self.id_tab_leader)
+        self.__fill_form_schedule__(EnumTabID.id_tab_schedule)
+        self.__fill_form_applyer__(EnumTabID.id_tab_applyer)
+        self.__fill_form_leader__(EnumTabID.id_tab_leader)
 
         print('apply')
         if self.auto_fill_member_list_at_start_for_demo:
             self.fill_member(b_refilled=0)
-
-        self.__fill_form_stay__(self.id_tab_stay)
-
+        self.__fill_form_stay__(EnumTabID.id_tab_stay)
 
     def __run_yushan__(self):
         self.cur_park = 'Yushan'
