@@ -12,12 +12,46 @@ class UserData:
     def get_member_list(self):
         '''Return the member list.
         '''
-        return util_read_data_xlsx(self.filename, 'member')
+        #return util_read_data_xlsx(self.filename, 'member')
+        b_ok, lst_dict_data = util_read_data_xlsx(self.filename, 'member')
+        if not b_ok:
+            return 0, None
+        b_ok, msg = self.__check_fmt__(lst_dict_data)
+        if not b_ok:
+            print(msg)
+            return 0, None
+        return 1, lst_dict_data
 
     def get_stay_data(self):
         '''Return the contact person information.
         '''
-        return util_read_data_xlsx(self.filename, 'stay')
+        # return util_read_data_xlsx(self.filename, 'stay')
+        b_ok, lst_dict_data = util_read_data_xlsx(self.filename, 'stay')
+        if not b_ok:
+            return 0, None
+        # b_ok, msg = self.__check_fmt__(lst_dict_data)
+        # if not b_ok:
+        #     print(msg)
+        #     return 0, None
+        return 1, lst_dict_data
+
+    @staticmethod
+    def __check_fmt__(lst_dict_data):
+        '''
+        Check the member data format.
+        '''
+        for dict_data in lst_dict_data:
+            b_ok, msg = UserData.__check_fmt_mobile__(dict_data)
+            if not b_ok:
+                return 0, msg
+        return 1, 'ok'
+
+    @staticmethod
+    def __check_fmt_mobile__(dict_data):
+        if len(dict_data['id_mobile']) != 10:
+            return 0, '[Format Error] id_mobile != 10.\nDetail:\nvalue = {}'.format(dict_data['id_mobile'])
+        return 1, 'ok'
+
 
 def util_read_data_xlsx(filename, sheet):
     ''' Utility to read member data from Excel file.
@@ -27,14 +61,14 @@ def util_read_data_xlsx(filename, sheet):
     else:
         return False, None
 
-    list_data = []
+    lst_dict_data = list()
     for i in data_frame.index:
-        dict_data = {}
+        dict_data = dict()
         for key in data_frame.columns:
             dict_data[key] = data_frame[key][i]
-        list_data.append(dict_data)
+        lst_dict_data.append(dict_data)
 
-    return True, list_data
+    return True, lst_dict_data
 
 def utl_read_data(filename):
     ''' Utility to read member data from file.
