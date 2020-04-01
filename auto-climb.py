@@ -232,22 +232,22 @@ def check_update():
         comm_base = subprocess.check_output('git merge-base @ @{u}'.split()) # return comm id
 
         if local == remote:
-            desc = '<div align=\"left\"><br>目前是最新版.</div>'
+            desc = '<div align=\"left\"><br>狀態: 目前是最新版.</div>'
             return 0, desc, local
         elif local == comm_base:
-            desc = '<div align=\"left\">版本檢查:<br>這個工具已經有新版本發布, 請到命令列執行 git pull 更新.</div>'
+            desc = '<div align=\"left\">版本檢查結果<br>這個工具已經有新版本發布, 請到命令列執行 git pull 更新.</div>'
             return 1, desc, local
 
         elif remote == comm_base:
-            desc = '<div align=\"left\">版本檢查:<br>Local changed. Require git push.</div>'
+            desc = '<div align=\"left\">版本檢查結果<br>狀態: Local changed. Require git push.</div>'
             return 2, desc, local
 
         else:
-            desc = '<div align=\"left\">版本檢查:<br>Source diverged</div>'
+            desc = '<div align=\"left\">版本檢查結果<br>狀態: Source diverged</div>'
             return 3, desc
 
     except subprocess.CalledProcessError:
-        desc = '<div align=\"left\">版本檢查:<br>[Error] Unable to get git information</div>'
+        desc = '<div align=\"left\">版本檢查結果<br>狀態: [Error] Unable to get git information</div>'
         return 4, desc, local
 
 def init_arg():
