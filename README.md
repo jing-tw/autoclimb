@@ -1,4 +1,4 @@
-# Auto-climb
+# Autoclimb
 
 
 ## 國家公園入山入園證 成員資料自動填寫工具
@@ -57,8 +57,9 @@ for Windows
 
 #### ( c ) Install Packages
 ```sh
-(venv_climbing) $ conda install -c conda-forge selenium pyside2 xlrd pandas
+(venv_climbing) $ conda install -c conda-forge selenium pyqt xlrd pandas
 (venv_climbing) $ pip install webdriver-manager
+(venv_climbing) $ pip install pytest-qt   # Optional: If you are a developper.
 ```
 
 ## 下載
@@ -88,8 +89,13 @@ Step 2:
 - [Programming skill](https://docs.google.com/document/d/1U1DZayMw3cEL8ZdOzN_gHTSscGgNYd_E1NKMIRDAXzY/edit?usp=sharing)
 - [Excel 設定技巧](https://docs.google.com/document/d/1AG0J3jg4ULTDfpDM3BD9i5ZeutwTJr4b7w9iTzz-DEM/edit?usp=sharing)
 
+## Auto Test
+```sh
+$ pytest -s
+```
+
 ## 問題回報
-https://github.com/jing-tw/autoclimb/issues or mqjing@gmail.com
+https://github.com/jing-tw/autoclimb/issues
 
 License
 ----
