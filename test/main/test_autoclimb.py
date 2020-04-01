@@ -1,45 +1,79 @@
+#pylint: disable=line-too-long, attribute-defined-outside-init, missing-module-docstring, missing-class-docstring, missing-function-docstring, invalid-name, unused-argument, arguments-differ
+
 import inspect
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
-from PyQt5.QtCore import QSize
-from PyQt5.QtCore import Qt
-
-#from ...autotest_layer_widget import AutoTestLayerWidget
-#from ...autoclimb import AutoClimbWidget
-from test.util.test_utility import TestBaseWidget
+import sys
 from test.test_vector.test_vector import TestVector
+from test.util.test_utility import TestBaseWidget2
+from test.util.test_utility import add_method
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
+
+from autoclimb import AutoClimbWidget
+@add_method(AutoClimbWidget)
+def __check_version__():
+    ''' OVERRIDE: No check version.
+    '''
+    #pylint: disable = unused-variable
+    print('[auto-test] override method: __check_version__')
+    return
+
+@add_method(AutoClimbWidget)
+def __get_filename__():
+    ''' OVERRIDE: Use sample file.
+    '''
+    #pylint: disable = unused-variable
+    print('[auto-test] override method: __get_filename__')
+    return 1, TestVector.get_test_member_file(), 'ok'
+
+@add_method(AutoClimbWidget)
+def __ask_autofill_member__():
+    ''' OVERRIDE: Auto fill member.
+    '''
+    #pylint: disable = unused-variable
+    print('[auto-test] override method: __ask_autofill_member__')
+    return 1
+
+@add_method(AutoClimbWidget)
+def __ack_continue_fill_schedule__():
+    ''' OVERRIDE: Auto accept.
+    '''
+    #pylint: disable = unused-variable
+    print('[auto-test] override method: __ack_continue_fill_schedule__')
+    return 1
 
 
-
-
-class TestAutoClimbWidgetDemo(TestBaseWidget):
+class TestAutoClimbWidgetDemo(TestBaseWidget2):
     def test_item_init(self, qtbot, monkeypatch):
         print('test_item_init')
         str_title = 'Testing: ' + inspect.currentframe().f_code.co_name
         print(str_title + ' testing... ')
 
-        self.window = self.__begin__(qtbot, '...autoclimb', 'AutoClimbWidget', str_title)  # direct debug the component
-        self.window.show()
 
-        def fn_action_1_check_data():
+        self.index = 0
+        self.app = QApplication([sys.argv])
+
+        self.window = AutoClimbWidget()
+        self.window.__init_ui__()
+        self.window.setWindowTitle(str_title)
+        self.window.show()
+        self.window.__ack_continue_fill_schedule__()
+        qtbot.add_widget(self.window)
+
+        def fn_action_1():
             bt_yushan = self.window.autotest_get('bt_yushan')
             qtbot.mouseClick(bt_yushan, Qt.LeftButton)
-            #self.autotest_add(bt_taroko, 'bt_taroko')
-            #self.autotest_add(bt_sheipa, 'bt_sheipa')
 
-            # pass
-            # widget_table = self.window.autotest_get('widget_table')
-            # test_vector_lst_item_rd = self.window.autotest_get('test_vector_lst_item_rd')
-            # test_vector_lst_visible_str_key = self.window.autotest_get('test_vector_lst_visible_str_key')
-            # assert(widget_table.columnCount() == len(test_vector_lst_visible_str_key))
-            # assert(widget_table.rowCount() == len(test_vector_lst_item_rd))
+        def fn_action_2():
+            bt_taroko = self.window.autotest_get('bt_taroko')
+            qtbot.mouseClick(bt_taroko, Qt.LeftButton)
 
-        def fn_action_2_bt_add():
-            pass
+        def fn_action_3():
+            bt_sheipa = self.window.autotest_get('bt_sheipa')
+            qtbot.mouseClick(bt_sheipa, Qt.LeftButton)
 
         def on_timeout_close():
-            #self.window.close()
-            pass
+            self.window.close()
+            #pass
 
-        self.lst_fun = [fn_action_1_check_data, fn_action_2_bt_add, on_timeout_close]
-        self.__run__(self.lst_fun, 2000)
+        self.lst_fun = [fn_action_1, fn_action_2, fn_action_3, on_timeout_close]
+        self.__run__(self.lst_fun, 1*000)

@@ -1,3 +1,40 @@
+# from functools import wraps # This convenience func preserves name and docstring
+
+
+
+# def add_method(cls):
+#     def decorator(func):
+#         @wraps(func) 
+#         def wrapper(self, *args, **kwargs): 
+#             return func(*args, **kwargs)
+#         setattr(cls, func.__name__, wrapper)
+#         # Note we are not binding func, but wrapper which accepts self but does exactly the same as func
+#         return func # returning func means func can still be used normally
+#     return decorator
+
+# class A():
+#     def __foo__(self):
+#         print('original')
+
+# @add_method(A)
+# def __foo__():
+#     print('hello world!')
+
+
+# a = A()
+# a.__foo__()
+
+
+
+
+
+
+
+
+
+
+
+
 '''
 The main module to run auto fill data progrom.
 '''
@@ -123,23 +160,18 @@ class AutoClimbWidget(AutoTestLayerWidget):
         '''Execute the auto fill procedure.
         '''
         try:
-            self.__load_memlst__()
+            b_ok, filename, msg = self.__get_filename__()
+            if not b_ok:
+                print(msg)
+                return
+            self.dict_arg['memberlist'] = filename
+
             b_ok, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
             if not b_ok:
                 print('Error: utl_read_data failure')
                 return
 
-            reply = QMessageBox.question(self, 'Continue?', \
-                    '<html> <p style="font-size:16pt"> 自動填入隊員資料? (稍後可重複動作) </p></html>', \
-                    QMessageBox.Yes, QMessageBox.No)
-
-            if reply == QMessageBox.Yes:
-                print('reply = ', 'Yes')
-                self.dict_arg['auto_fill_member_list_at_start_for_demo'] = True
-            else:
-                print('reply = ', 'NO')
-                self.dict_arg['auto_fill_member_list_at_start_for_demo'] = False
-
+            reply = self.__ask_autofill_member__()
             print('reply = ', reply)
 
             self.obj_auto = ParkAuto(self.dict_arg, lst_mem, lst_stay)
@@ -150,9 +182,10 @@ class AutoClimbWidget(AutoTestLayerWidget):
             self.__update_status__('完成. <br> 右側按鈕: 可以自動填入隊員資料')
 
             self.activateWindow()  # show the control panel
-            reply = QMessageBox.question(self, '訊息', \
-                    '<html> <p style="font-size:16pt"> 請修改自己的行程 <br> 完成修改後, 點選 [自動填入隊員資料] 按鈕 </p></html>', \
-                    QMessageBox.Ok)
+            # reply = QMessageBox.question(self, '訊息', \
+            #         '<html> <p style="font-size:16pt">隊員資料自動填寫完成. 請至繼續到[行程]頁面修改自己的行程. <br>完成修改後, 點選 [自動填入隊員資料] 按鈕 </p></html>', \
+            #         QMessageBox.Ok)
+            self.__ack_continue_fill_schedule__()
         except Exception as err:
             traceback.print_exc()
             msg = '\n\n查閱上方錯誤訊息, 進行檢測.\n\n1.請確定你的機器是否連上網際網路\n2.瀏覽器是否已經被關閉了\n3.有可能是瀏覽器版本太舊了, 請更新你的瀏覽器版本.\n\nDetail:{}'.format(format(err))
@@ -161,12 +194,33 @@ class AutoClimbWidget(AutoTestLayerWidget):
             print(msg)
             return
 
-    def __load_memlst__(self):
+    def __ack_continue_fill_schedule__(self):
+        reply = QMessageBox.question(self, '訊息', \
+                    '<html> <p style="font-size:16pt">隊員資料自動填寫完成. 請至繼續到[行程]頁面修改自己的行程. <br>完成修改後, 點選 [自動填入隊員資料] 按鈕 </p></html>', \
+                    QMessageBox.Ok)
+        return reply
+
+    def __ask_autofill_member__(self):
+        reply = QMessageBox.question(self, 'Continue?', \
+                    '<html> <p style="font-size:16pt"> 自動填入隊員資料? (稍後可重複動作) </p></html>', \
+                    QMessageBox.Yes, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            print('reply = ', 'Yes')
+            self.dict_arg['auto_fill_member_list_at_start_for_demo'] = True
+        else:
+            print('reply = ', 'NO')
+            self.dict_arg['auto_fill_member_list_at_start_for_demo'] = False
+        return reply
+
+    def __get_filename__(self):
         print('load')
         lst_filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', '.', '*.xlsx')
         if lst_filename:
             print(lst_filename[0])
-            self.dict_arg['memberlist'] = lst_filename[0]
+            #self.dict_arg['memberlist'] = lst_filename[0]
+            return 1, lst_filename[0], 'ok'
+        return 0, None, '[Warning] getOpenFileName Failure or Cancel.'
 
     def __loc_center__(self):
         screen_geo = QDesktopWidget().screenGeometry()
@@ -197,7 +251,7 @@ def __check_update__():
             return 2, desc, local
 
         desc = '<div align=\"left\">版本檢查結果<br>狀態: Source diverged</div>'
-        return 3, desc
+        return 3, desc, local
 
     except subprocess.CalledProcessError:
         desc = '<div align=\"left\">版本檢查結果<br>狀態: [Error] Unable to get git information</div>'

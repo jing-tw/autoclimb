@@ -22,7 +22,7 @@ class UserData:
 def util_read_data_xlsx(filename, sheet):
     ''' Utility to read member data from Excel file.
     '''
-    if filename.split('.')[1] == 'xlsx':
+    if filename.split('.')[-1] == 'xlsx':
         data_frame = pd.read_excel(filename, sheet, dtype='str')
     else:
         return False, None
