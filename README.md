@@ -53,7 +53,7 @@ $ conda create --name venv_climbing python=3.6
 for Linux
 $ source activate venv_climbing
 
-for Windows
+for Windows or MacOS
 > conda activate env_climbing
 ```
 
@@ -64,9 +64,9 @@ for Windows
 (venv_climbing) $ pip install pytest-qt   # Optional: If you are a developper.
 ```
 
-## 下載
+## 下載 source code
 ```sh
-$ git clone git clone git@github.com:jing-tw/autoclimb.git
+$ git@github.com:jing-tw/autoclimb.git
 
 or 
 https://github.com/jing-tw/autoclimb/archive/master.zip
