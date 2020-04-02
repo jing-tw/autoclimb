@@ -126,10 +126,13 @@ class ParkAuto:
         self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數
         self.browser.select_inx('ContentPlaceHolder1_applystart', dict_team['date_applystart_idx']) # 入園日期
 
+        if self.cur_park == 'Taroko':
+            self.browser.handle_alert_popup() # handle the altert widnow for Taroko National Park (系統開放每日7:00-23:00可進行線上申請，已於7:00前進入系統者，請您手動重新整理頁面或重新登入)
+
         # the pseudo schedule: test passed for three parks
-        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山登山口
-        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山東峰
-        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # 雪山登山口
+        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # ex: 雪山登山口
+        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # ex: 雪山東峰
+        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # ex: 雪山登山口
         self.browser.click_id('ContentPlaceHolder1_btnover')   # 完成今日路線
         self.browser.select_inx('ContentPlaceHolder1_teams_count', dict_team['member_count']) # 人數
 
