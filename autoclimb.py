@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtGui import QPixmap
 from ui_button import PicButton
 from park_auto import ParkAuto
+from park_auto import TarokoPark, YushanPark, SheipaPark
 from autotest_layer_widget import AutoTestLayerWidget
 from utility_io import util_read_data_xlsx, utl_read_data
 
@@ -105,16 +106,28 @@ class AutoClimbWidget(AutoTestLayerWidget):
         self.text_status.setText(str_status)
 
     def __run_yushan__(self):
+        b_reject, msg = YushanPark.is_reject()
+        if b_reject:
+            self.__show_reject_message__(msg)
+            return
         self.__update_status__('玉山國家公園')
         self.dict_arg['park'] = 0
         self.run()
 
     def __run_taroko__(self):
+        b_reject, msg = TarokoPark.is_reject()
+        if b_reject:
+            self.__show_reject_message__(msg)
+            return
         self.__update_status__('太魯閣國家公園')
         self.dict_arg['park'] = 1
         self.run()
 
     def __run_sheipa__(self):
+        b_reject, msg = SheipaPark.is_reject()
+        if b_reject:
+            self.__show_reject_message__(msg)
+            return
         self.__update_status__('雪霸國家公園')
         self.dict_arg['park'] = 2
         self.run()
@@ -145,9 +158,6 @@ class AutoClimbWidget(AutoTestLayerWidget):
             self.__update_status__('完成. <br> 右側按鈕: 可以自動填入隊員資料')
 
             self.activateWindow()  # show the control panel
-            # reply = QMessageBox.question(self, '訊息', \
-            #         '<html> <p style="font-size:16pt">隊員資料自動填寫完成. 請至繼續到[行程]頁面修改自己的行程. <br>完成修改後, 點選 [自動填入隊員資料] 按鈕 </p></html>', \
-            #         QMessageBox.Ok)
             self.__ack_continue_fill_schedule__()
         except Exception as err:
             traceback.print_exc()
@@ -157,10 +167,18 @@ class AutoClimbWidget(AutoTestLayerWidget):
             print(msg)
             return
 
-    def __ack_continue_fill_schedule__(self):
+    def __show_reject_message__(self, msg):
+        self.__update_status__(msg)
+        self.__notify_message__('條件不足無法自動填寫', msg)
+
+    def __notify_message__(self, str_line1, str_line2):
         reply = QMessageBox.question(self, '訊息', \
-                    '<html> <p style="font-size:16pt">隊員資料自動填寫完成. 請至繼續到[行程]頁面修改自己的行程. <br>完成修改後, 點選 [自動填入隊員資料] 按鈕 </p></html>', \
+                    '<html> <p style="font-size:16pt">{} <br>{} </p></html>'.format(str_line1, str_line2), \
                     QMessageBox.Ok)
+        return reply
+
+    def __ack_continue_fill_schedule__(self):
+        reply = self.__notify_message__('隊員資料自動填寫完成. 請至繼續到[行程]頁面修改自己的行程.', '成修改後, 點選 [自動填入隊員資料] 按鈕')
         return reply
 
     def __ask_autofill_member__(self):
@@ -191,7 +209,7 @@ class AutoClimbWidget(AutoTestLayerWidget):
         widget = self.geometry()
         loc_x = screen_geo.width()/2 - widget.width()/2 + screen_geo.width()/6
         loc_y = screen_geo.height()/2 - widget.height()/2
-        self.move(loc_x, loc_y)
+        self.move(int(loc_x), int(loc_y))
 
 def __check_update__():
     # ref: https://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git

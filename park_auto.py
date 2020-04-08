@@ -17,7 +17,36 @@ class EnumTabID():
     id_tab_member = 'ContentPlaceHolder1_menu3'
     id_tab_stay = 'ContentPlaceHolder1_menu4'
 
-class ParkAuto:
+class TarokoPark():
+    ''' 太魯閣國家公園 Class
+    '''
+    @staticmethod
+    def is_reject():
+        ''' Reject the request when condition is true.
+        '''
+        local_time = time.localtime()
+        if local_time.tm_hour < 7 or local_time.tm_hour > 23:
+            return 1, '[reject] 太魯閣國家公園: 系統開放每日7:00-23:00可進行線上申請.'
+        return 0, 'pass'
+class YushanPark():
+    ''' 玉山國家公園 Class
+    '''
+    @staticmethod
+    def is_reject():
+        ''' Reject the request when condition is true.
+        '''
+        return 0, 'pass'
+
+class SheipaPark():
+    ''' 雪霸國家公園 Class
+    '''
+    @staticmethod
+    def is_reject():
+        ''' Reject the request when condition is true.
+        '''
+        return 0, 'pass'
+
+class ParkAuto():
     '''
     The class for Taiwan National Park autofill.
     '''
@@ -126,8 +155,8 @@ class ParkAuto:
         self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數
         self.browser.select_inx('ContentPlaceHolder1_applystart', dict_team['date_applystart_idx']) # 入園日期
 
-        if self.cur_park == 'Taroko':
-            self.browser.handle_alert_popup() # handle the altert widnow for Taroko National Park (系統開放每日7:00-23:00可進行線上申請，已於7:00前進入系統者，請您手動重新整理頁面或重新登入)
+        #if self.cur_park == 'Taroko':
+        #    self.browser.handle_alert_popup() # handle the altert widnow for Taroko National Park (系統開放每日7:00-23:00可進行線上申請，已於7:00前進入系統者，請您手動重新整理頁面或重新登入)
 
         # the pseudo schedule: test passed for three parks
         self.browser.click_id('ContentPlaceHolder1_rblNode_0') # ex: 雪山登山口
