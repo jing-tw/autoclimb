@@ -1,0 +1,2 @@
+source activate venv_climbing2
+python3 autoclimb.py
