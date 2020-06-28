@@ -1,6 +1,7 @@
 '''
 The browser automatic fill module.
 '''
+from datetime import datetime
 import traceback
 import time
 import selenium
@@ -214,7 +215,7 @@ class BrowserAuto:
         time.sleep(self.__wait_sec_calendar__)
         element = self.driver.find_element_by_class_name('ui-datepicker-year')
         sele = Select(element)
-        sele.select_by_index(int(yyyy)-1929)  # 0: 1929
+        sele.select_by_index(int(yyyy) - datetime.now().year + 90)  # idx 0 of year: current - 90
 
         time.sleep(self.__wait_sec_calendar__)
         element = self.driver.find_element_by_class_name('ui-datepicker-month')

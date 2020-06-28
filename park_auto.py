@@ -1,6 +1,7 @@
 '''
 The National Park autofill module.
 '''
+from datetime import datetime, timedelta
 import traceback
 import time
 from selenium.common.exceptions import TimeoutException
@@ -53,7 +54,7 @@ class ParkAuto():
     name_park = {}
     addr_park = 'https://npm.cpami.gov.tw/apply_1.aspx'
 
-    def __init__(self, dict_arg, lst_mem, lst_stay):
+    def __init__(self, dict_arg, team, lst_mem, lst_stay):
         print('Start Taiwan National Park Automation ')
         self.park = dict_arg['park']
         self.auto_fill_member_list_at_start_for_demo = dict_arg['auto_fill_member_list_at_start_for_demo']
@@ -62,14 +63,8 @@ class ParkAuto():
         count_member = len(lst_mem)
 
         # team
-        self.dict_team = {
-            'name': 'Lemna 快樂登山隊',
-            'climbline_main_idx': 1,       # 主路線 (default idx)
-            'climbline_sub_idx': 1,        # 次路線 (default idx)
-            'total_day': 1,                # 總天數 (default)
-            'date_applystart_idx': 1,      # 入園日期 (default idx)
-            'member_count': count_member,
-        }
+        self.dict_team = team
+        self.dict_team['member_count'] = count_member
 
         # member list
         self.lst_mem = lst_mem
@@ -153,7 +148,15 @@ class ParkAuto():
         self.browser.select_inx('ContentPlaceHolder1_climblinemain', dict_team['climbline_main_idx']) # 主路線
         self.browser.select_inx('ContentPlaceHolder1_climbline', dict_team['climbline_sub_idx']) #次路線
         self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數
-        self.browser.select_inx('ContentPlaceHolder1_applystart', dict_team['date_applystart_idx']) # 入園日期
+
+        try:
+            date_applystart_idx = (datetime.strptime(dict_team['date_applystart'], '%Y-%m-%d') - (datetime.now() + timedelta(4))).days + 1 # 入園日期
+        except Exception as ex:
+            print(ex)
+            date_applystart_idx = 1 # 入園日期 (default idx = 1)
+        print('date_applystart_idx: ', date_applystart_idx)
+        self.browser.select_inx('ContentPlaceHolder1_applystart', date_applystart_idx)
+
 
         #if self.cur_park == 'Taroko':
         #    self.browser.handle_alert_popup() # handle the altert widnow for Taroko National Park (系統開放每日7:00-23:00可進行線上申請，已於7:00前進入系統者，請您手動重新整理頁面或重新登入)

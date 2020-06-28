@@ -142,7 +142,7 @@ class AutoClimbWidget(AutoTestLayerWidget):
                 return
             self.dict_arg['memberlist'] = filename
 
-            b_ok, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
+            b_ok, team, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
             if not b_ok:
                 print('Error: utl_read_data failure')
                 return
@@ -150,7 +150,7 @@ class AutoClimbWidget(AutoTestLayerWidget):
             reply = self.__ask_autofill_member__()
             print('reply = ', reply)
 
-            self.obj_auto = ParkAuto(self.dict_arg, lst_mem, lst_stay)
+            self.obj_auto = ParkAuto(self.dict_arg, team, lst_mem, lst_stay)
             self.obj_auto.run()
 
             # show re-fill member button only when obj_auto_run exist

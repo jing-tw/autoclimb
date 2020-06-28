@@ -9,6 +9,12 @@ class UserData:
     def __init__(self, filename):
         self.filename = filename
 
+    def get_team(self):
+        b_ok, team_data = util_read_data_xlsx(self.filename, 'team')
+        if not b_ok:
+            return 0, None
+        return 1, team_data[0]
+
     def get_member_list(self):
         '''Return the member list.
         '''
@@ -79,6 +85,11 @@ def utl_read_data(filename):
         return False, None, None
 
     obj_data = UserData(filename)
+
+    b_ok, team = obj_data.get_team()
+    if not b_ok:
+        return ret_error(' get_team failure')
+
     b_ok, lst_mem = obj_data.get_member_list()
     if not b_ok:
         return ret_error(' get_member_list failure')
@@ -90,4 +101,5 @@ def utl_read_data(filename):
         return ret_error(' get_stay_data failure')
     if len(lst_stay) == 0:
         return ret_error(' len(lst_stay) == 0')
-    return True, lst_mem, lst_stay
+
+    return True, team, lst_mem, lst_stay
