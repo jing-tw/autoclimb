@@ -142,15 +142,30 @@ class AutoClimbWidget(AutoTestLayerWidget):
                 return
             self.dict_arg['memberlist'] = filename
 
-            b_ok, lst_mem, lst_stay = utl_read_data(self.dict_arg['memberlist'])
+            # for old data file that has no 'team' sheet in the file.
+            dict_team_default = {
+                'name': 'Lemna 快樂登山隊',
+                'climbline_main_idx': 1,       # 主路線 (default idx)
+                'climbline_sub_idx': 1,        # 次路線 (default idx)
+                'total_day': 1,                # 總天數 (default)
+                'date_applystart_idx': 1,      # 入園日期 (default idx)
+                'member_count': 0 # the value will be filled, later.
+            }
+
+            lst_dict_meta_default = list()
+            lst_dict_meta_default.append({'item': 'version', 'value': 'v0.0.0'}) # default version for the data formation
+
+            b_ok, team, lst_mem, lst_stay, lst_meta = utl_read_data(self.dict_arg['memberlist'], dict_team_default, lst_dict_meta_default)
             if not b_ok:
                 print('Error: utl_read_data failure')
                 return
 
+            print('資料檔格式資訊\n\t{} : {}'.format(lst_meta[0]['item'], lst_meta[0]['value'])) # 資料檔版本資訊 index = 0
+
             reply = self.__ask_autofill_member__()
             print('reply = ', reply)
 
-            self.obj_auto = ParkAuto(self.dict_arg, lst_mem, lst_stay)
+            self.obj_auto = ParkAuto(self.dict_arg, team, lst_mem, lst_stay)
             self.obj_auto.run()
 
             # show re-fill member button only when obj_auto_run exist
