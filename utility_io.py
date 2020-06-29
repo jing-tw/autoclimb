@@ -9,18 +9,30 @@ class UserData:
     def __init__(self, filename):
         self.filename = filename
 
-    def get_team(self):
-        b_ok, team_data = util_read_data_xlsx(self.filename, 'team')
+    def get_meta_data(self):
+        '''Return the meta data for the file.
+        '''
+        b_ok, lst_dict_data, msg = util_read_data_xlsx(self.filename, 'meta')
         if not b_ok:
-            return 0, None
-        return 1, team_data[0]
+            print(msg)
+            return 0, None, msg
+        return 1, lst_dict_data, msg
+
+    def get_team(self):
+        '''Return the team infomation.
+        '''
+        b_ok, team_data, msg = util_read_data_xlsx(self.filename, 'team')
+        if not b_ok:
+            print(msg)
+            return 0, None, msg
+        return 1, team_data[0], msg
 
     def get_member_list(self):
         '''Return the member list.
         '''
-        #return util_read_data_xlsx(self.filename, 'member')
-        b_ok, lst_dict_data = util_read_data_xlsx(self.filename, 'member')
+        b_ok, lst_dict_data, msg = util_read_data_xlsx(self.filename, 'member')
         if not b_ok:
+            print(msg)
             return 0, None
         b_ok, msg = self.__check_fmt__(lst_dict_data)
         if not b_ok:
@@ -31,14 +43,10 @@ class UserData:
     def get_stay_data(self):
         '''Return the contact person information.
         '''
-        # return util_read_data_xlsx(self.filename, 'stay')
-        b_ok, lst_dict_data = util_read_data_xlsx(self.filename, 'stay')
+        b_ok, lst_dict_data, msg = util_read_data_xlsx(self.filename, 'stay')
         if not b_ok:
+            print(msg)
             return 0, None
-        # b_ok, msg = self.__check_fmt__(lst_dict_data)
-        # if not b_ok:
-        #     print(msg)
-        #     return 0, None
         return 1, lst_dict_data
 
     @staticmethod
@@ -60,24 +68,29 @@ class UserData:
 
 
 def util_read_data_xlsx(filename, sheet):
-    ''' Utility to read member data from Excel file.
+    ''' Utility to data from Excel file.
     '''
-    if filename.split('.')[-1] == 'xlsx':
-        data_frame = pd.read_excel(filename, sheet, dtype='str')
-    else:
-        return False, None
+    try:
+        if filename.split('.')[-1] == 'xlsx':
+            data_frame = pd.read_excel(filename, sheet, dtype='str')
+        else:
+            return 0, None, 'Error: The file extension does not xlsx.'
 
-    lst_dict_data = list()
-    for i in data_frame.index:
-        dict_data = dict()
-        for key in data_frame.columns:
-            dict_data[key] = data_frame[key][i]
-        lst_dict_data.append(dict_data)
+        lst_dict_data = list()
+        for i in data_frame.index:
+            dict_data = dict()
+            for key in data_frame.columns:
+                dict_data[key] = data_frame[key][i]
+            lst_dict_data.append(dict_data)
 
-    return True, lst_dict_data
+        return 1, lst_dict_data, 'ok'
+    except Exception as err:
+        if 'No sheet named' in format(err):
+            return 0, None, 'Error: No sheet named {} in the file.'.format(sheet)
+        raise err
 
-def utl_read_data(filename):
-    ''' Utility to read member data from file.
+def utl_read_data(filename, team_default, lst_meta_default):
+    ''' Utility to reasd member data from file.
     '''
     print('read file ', filename)
     def ret_error(title):
@@ -86,9 +99,21 @@ def utl_read_data(filename):
 
     obj_data = UserData(filename)
 
-    b_ok, team = obj_data.get_team()
+    b_ok, lst_meta, msg = obj_data.get_meta_data()
     if not b_ok:
-        return ret_error(' get_team failure')
+        if 'No sheet named' in msg:
+            print('Auto-Fix: 發現舊資料檔格式, 登山隊相關資訊使用預設值代替. (建議使用新格式, 紀錄你的登山隊資料. 參考: sample_9_people.xlsx)')
+            lst_meta = lst_meta_default
+        else:
+            return ret_error(' get_meta_data failure')
+
+    b_ok, team, msg = obj_data.get_team()
+    if not b_ok:
+        if 'No sheet named' in msg:
+            print('Auto-Fix: 發現舊資料檔格式, 登山隊相關資訊使用預設值代替. (建議使用新格式, 紀錄你的登山隊資料. 參考: sample_9_people.xlsx)')
+            team = team_default
+        else:
+            return ret_error(' get_team failure')
 
     b_ok, lst_mem = obj_data.get_member_list()
     if not b_ok:
@@ -102,4 +127,4 @@ def utl_read_data(filename):
     if len(lst_stay) == 0:
         return ret_error(' len(lst_stay) == 0')
 
-    return True, team, lst_mem, lst_stay
+    return True, team, lst_mem, lst_stay, lst_meta
