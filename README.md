@@ -1,5 +1,8 @@
 # Autoclimb
-## change log
+## Change log
+- [add] 新增 team sheet: 可以在 Excel 中, 加入登山隊隊名 (感謝 stanleyatlinc 新增此功能)
+- [fix] 修正 日期選項 (感謝 stanleyatlinc 修正此功能)
+### old
 - [add] 新冠病毒防疫警示自動勾選
 - [modify] 使用 PyQt5
 
@@ -28,8 +31,8 @@ sample_9_people.xlsx   (建議另存新檔, 每一次登山活動都存一個 xl
 
 [![N|Solid](https://2.bp.blogspot.com/-CCmP-Ghkuo0/XKF5UameYrI/AAAAAAAAeBQ/aDO1JYJzIFkxmNJLtYCZAFw9i--oNOqMwCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B10-33-49.png)](https://2.bp.blogspot.com/-CCmP-Ghkuo0/XKF5UameYrI/AAAAAAAAeBQ/aDO1JYJzIFkxmNJLtYCZAFw9i--oNOqMwCLcBGAs/s1600/Screenshot%2Bfrom%2B2019-04-01%2B10-33-49.png)
 
-## 安裝執行環境
-### Install Chrome (確定安裝最新版)
+## 安裝環境
+### Step 1: Install Chrome (確定安裝最新版)
 https://www.google.com/chrome/
 ```sh
 for Linux
@@ -42,22 +45,43 @@ for Windows or MacOS
 https://www.google.com/chrome/
 ```
 
-### 安裝與設定 Python
-#### ( a ) Insatll Anaconda
+### Step 2: 安裝 git ###
+```sh
+for Windows
+```
+https://git-scm.com/download/win (下載 64-bit Git for Windows Setup).
+
+```sh
+for Linux
+$ sudo apt-get install git
+
+for MacOS
+# brew install git
+```
+
+### Step 3: 安裝與設定 Python
+#### ( a ) Insatll Anaconda (選擇安裝 Python 3.x 64-bit 版本)
 https://www.anaconda.com/distribution/
 
 #### ( b ) Setup Virtual Environment
 ```sh
-$ conda create --name venv_climbing python=3.6
+for Windows
+Step 1: Launch the Anaconda Prompt
+    [開始] -> [Anaconda Prompt (anaconda 3)]
+Step 2: setup the virtual environment
+> conda create --name venv_climbing python=3.6
+> conda activate venv_climbing
 
 for Linux
+$ conda create --name venv_climbing python=3.6
 $ source activate venv_climbing
 
-for Windows or MacOS
-> conda activate env_climbing
+for MacOS
+$ conda create --name venv_climbing python=3.6
+$ conda activate venv_climbing
 ```
 
-#### ( c ) Install Packages
+#### ( c ) Install the Packages
 ```sh
 (venv_climbing) $ conda install -c conda-forge selenium pyqt xlrd pandas
 (venv_climbing) $ pip install webdriver-manager
@@ -66,33 +90,43 @@ for Windows or MacOS
 
 ## 下載 source code
 ```sh
-$ git@github.com:jing-tw/autoclimb.git
+for Windows
+> git clone https://github.com/jing-tw/autoclimb.git
 
-or 
-https://github.com/jing-tw/autoclimb/archive/master.zip
-
+for Linux/MacOS
+$ git clone https://github.com/jing-tw/autoclimb.git
 ```
 
 ## 執行
 ```sh
-Step 1: 切進執行環境
-for Linux
-$ source activate venv_climbing
-
 for Windows
+> cd autoclimb
 > conda activate env_climbing
+(env_climbing) $ python autoclimb.py
 
-Step 2: 
+for Linux
+$ cd autoclimb
+$ source activate venv_climbing
+(env_climbing) $ python autoclimb.py
+
+for MacOS
+$ cd autoclimb
+$ conda activate venv_climbing
 (env_climbing) $ python autoclimb.py
 ```
 
 ## for Developer
-- [Task](https://docs.google.com/spreadsheets/d/1zBzCCGJZ_3ZbQgUl_GSnXP8J3mQQUV7dGDGVw76bHoM/edit?usp=sharing)
-- [Programming skill](https://docs.google.com/document/d/1U1DZayMw3cEL8ZdOzN_gHTSscGgNYd_E1NKMIRDAXzY/edit?usp=sharing)
+### Tool
+- Visual Code, https://code.visualstudio.com/
+
+### Documents
+- [Design Document](https://docs.google.com/spreadsheets/d/1zBzCCGJZ_3ZbQgUl_GSnXP8J3mQQUV7dGDGVw76bHoM/edit?usp=sharing)
+- [Python Tutorial](https://docs.google.com/document/d/1U1DZayMw3cEL8ZdOzN_gHTSscGgNYd_E1NKMIRDAXzY/edit?usp=sharing)
 - [Excel 設定技巧](https://docs.google.com/document/d/1AG0J3jg4ULTDfpDM3BD9i5ZeutwTJr4b7w9iTzz-DEM/edit?usp=sharing)
 
-## Auto Test
+### Auto Test
 ```sh
+# 做了修改後, 請執行自動測試. 它會自動執行三個國家公園的檢查 (你可以去咖啡)
 $ pytest -s
 ```
 
