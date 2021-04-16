@@ -53,6 +53,12 @@ class BrowserAuto:
 
         self.driver.execute_script(str_script_center, element)
 
+    def sleep(self, int_unit):
+        '''
+        sleep in unit __wait_sec__ sec.
+        '''
+        time.sleep(self.__wait_sec__ * int_unit)
+
     def __do_action__(self, str_cmd, dict_arg):
         b_run = True
         cnt = 0
@@ -115,6 +121,7 @@ class BrowserAuto:
         '''
         Click web element by id.
         '''
+        self.sleep(1)
         dict_arg = {}
         dict_arg['str_id'] = str_id
         return self.__do_action__('click_id', dict_arg)

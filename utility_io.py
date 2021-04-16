@@ -1,6 +1,7 @@
 '''
 Utiilty for I/O.
 '''
+import math
 import pandas as pd
 
 class UserData:
@@ -16,7 +17,10 @@ class UserData:
         if not b_ok:
             print(msg)
             return 0, None, msg
+        lst_dict_data = UserData.__remove_invalid_raw__(lst_dict_data)
         return 1, lst_dict_data, msg
+
+    
 
     def get_team(self):
         '''Return the team infomation.
@@ -34,6 +38,7 @@ class UserData:
         if not b_ok:
             print(msg)
             return 0, None
+        lst_dict_data = UserData.__remove_invalid_raw__(lst_dict_data)
         b_ok, msg = self.__check_fmt__(lst_dict_data)
         if not b_ok:
             print(msg)
@@ -49,6 +54,25 @@ class UserData:
             return 0, None
         return 1, lst_dict_data
 
+    @staticmethod
+    def __remove_invalid_raw__(lst_dict_data):
+        lst_dict_data_new = list()
+
+        for dict_data in lst_dict_data:
+            if not UserData.__has_nan_value__(dict_data):
+                lst_dict_data_new.append(dict_data)
+
+        return lst_dict_data_new
+
+    @staticmethod
+    def __has_nan_value__(dict_data):
+        for key in dict_data.keys():
+            data = dict_data[key]
+            if (type(data) == int or type(data) == float):
+                if math.isnan(data):
+                    return True
+        return False
+    
     @staticmethod
     def __check_fmt__(lst_dict_data):
         '''
@@ -72,7 +96,7 @@ def util_read_data_xlsx(filename, sheet):
     '''
     try:
         if filename.split('.')[-1] == 'xlsx':
-            data_frame = pd.read_excel(filename, sheet, dtype='str')
+            data_frame = pd.read_excel(filename, sheet, dtype='str', engine='openpyxl')
         else:
             return 0, None, 'Error: The file extension does not xlsx.'
 

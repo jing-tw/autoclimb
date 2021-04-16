@@ -112,10 +112,14 @@ class ParkAuto():
     def __run_yushan__(self):
         self.cur_park = 'Yushan'
         self.browser.click('玉山國家公園')
-        self.browser.click_id('chk[]15')# 領隊已明確告知以下相關事項：
+
+        self.browser.click_id('chk[]0') # 確認已於申請前詳閱「進入玉山國家公園生態保護區申請案件個人資料運用說明」，已轉知並取得全體隊員同意使用當事人個人資料辦理入園申請相關事宜。
+        self.browser.click_id('chk[]15')# 入園期間應攜帶入園許可證及身分證明文件正本俾利查核，未攜帶身分證明文件或所攜帶身分證明文件與入園許可證名冊不符者，禁止其入園。已入園者得令其離園。不聽制止或未依前段規定入園者，得依國家公園法第 19條規定處罰。
+        self.browser.click_id('chk[]16')# 領隊已明確告知以下相關事項：
                                         #    1.隊伍成員如為中央流行疫情指揮中心公告之「符合通報定義」之人員(詳見:https://www.cdc.gov.tw)，應自行取消入園。
                                         #    2.隊伍成員入園前若有發燒、呼吸道不適或嚴重咳嗽者等症狀，應自行取消入園。
                                         #    3.隊伍所有成員應加強自主健康管理，入園之後如有疑似相關症狀發生，應使用口罩或足可遮掩口鼻物品進入山屋，保護自己也尊重他人。。
+        self.browser.click_id('chk[]17')# 入園申請隊員若具有學生身分或參加學校社團活動，請務必自行通報學校相關單位，作為緊急應變之用。
         self.click_ok()
         self.__apply__()
 
@@ -124,6 +128,7 @@ class ParkAuto():
         self.browser.click('太魯閣國家公園')
         self.browser.click_id('chk[]10')# 確認已於申請前詳閱並明瞭「 錐麓古道入園收費須知」，現場購票與入園查核時間每日上午7時~上午10時止，並轉知全體隊員
         self.browser.click_id('chk[]11')# 隊伍所有成員於入園前一日皆「非」中央疫情指揮中心所公告居家隔離、居家檢疫及自主健康管理之人員。(詳見:https://www.cdc.gov.tw)。
+        self.browser.click_id('chk[]12')# 入園申請隊員若具有學生身分或參加學校社團活動，請務必自行通報學校相關單位，作為緊急應變之用。
         self.click_ok()
         self.__apply__()
 
@@ -145,8 +150,11 @@ class ParkAuto():
 
         if self.cur_park != 'Taroko':
             self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name'], 0) # 隊名
+            self.browser.sleep(1); # wait for server checking/response the team name.
         self.browser.select_inx('ContentPlaceHolder1_climblinemain', dict_team['climbline_main_idx']) # 主路線
+        self.browser.sleep(1); # wait for server checking/response the team name.
         self.browser.select_inx('ContentPlaceHolder1_climbline', dict_team['climbline_sub_idx']) #次路線
+        self.browser.sleep(1); # wait for server checking/response the team name.
         self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數
 
         try:
@@ -161,10 +169,27 @@ class ParkAuto():
         #if self.cur_park == 'Taroko':
         #    self.browser.handle_alert_popup() # handle the altert widnow for Taroko National Park (系統開放每日7:00-23:00可進行線上申請，已於7:00前進入系統者，請您手動重新整理頁面或重新登入)
 
-        # the pseudo schedule: test passed for three parks
-        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # ex: 雪山登山口
-        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # ex: 雪山東峰
-        self.browser.click_id('ContentPlaceHolder1_rblNode_0') # ex: 雪山登山口
+        # Create pseudo travel plan
+        if self.cur_park == 'Yushan':
+            # Pseudo Plan: 登山口排雲登山服務中心→登山口塔塔加登山口→一般玉山前峰→登山口塔塔加登山口→登山口排雲登山服務中心
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_1')
+
+        if self.cur_park == 'Taroko':
+            # Pseudo Plan: 登山口奇萊登山口→宿營地黑水塘山屋→登山口奇萊登山口
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+
+        if self.cur_park == 'Sheipa':
+            # Pseudo Plan: 雪山登山口→雪山東峰→雪山登山口
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+
         self.browser.click_id('ContentPlaceHolder1_btnover')   # 完成今日路線
         self.browser.select_inx('ContentPlaceHolder1_teams_count', dict_team['member_count']) # 人數
 

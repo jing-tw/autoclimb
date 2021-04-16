@@ -1,8 +1,26 @@
 # Autoclimb
+
 ## Change log
+### Version: 
+#### 1. 隊員資料檔
+- [fixed] 解決因為第三方套件不支援 xlsx 導致讀取失敗的問題. Act: 新增支援套件. pip install openpyxl 
+- [fixed] 解決資料內容全部是空的問題, 導致自動程序中斷問題. Act: 空的資料視為無資料.
+
+#### 2. 玉山國家公園
+- [updated] 追加玉山國家公園申請網頁, 新增首頁自動勾選: 4 項
+- [updated] 修正玉山國家公園形成安排的變動. Pseudo Plan: 登山口排雲登山服務中心→登山口塔塔加登山口→一般玉山前峰→登山口塔塔加登山口→登山口排雲登山服務中心
+
+#### 3. 太魯閣國家公園
+- [new] 追加太魯閣國家公園申請網頁, 新增首頁自動勾選: 1 項
+
+#### 4. 流程優化
+- [remove] 移除討厭的對話視窗
+
+
+### Version: 489c6a8b4c253d8e33a2ab15e14647eaffc58c93
 - [add] 新增 team sheet: 可以在 Excel 中, 加入登山隊隊名 (感謝 stanleyatlinc 新增此功能)
 - [fix] 修正 日期選項 (感謝 stanleyatlinc 修正此功能)
-### old
+### Version: older
 - [add] 新冠病毒防疫警示自動勾選
 - [modify] 使用 PyQt5
 
@@ -83,7 +101,7 @@ $ conda activate venv_climbing
 
 #### ( c ) Install the Packages
 ```sh
-(venv_climbing) $ conda install -c conda-forge selenium pyqt xlrd pandas
+(venv_climbing) $ conda install -c conda-forge selenium pyqt xlrd pandas openpyxl
 (venv_climbing) $ pip install webdriver-manager
 (venv_climbing) $ pip install pytest-qt   # Optional: If you are a developper.
 ```
