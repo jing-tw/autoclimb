@@ -67,6 +67,8 @@ class UserData:
     @staticmethod
     def __has_nan_value__(dict_data):
         for key in dict_data.keys():
+            # if str(key).startswith('Unnamed'):
+            #     continue
             data = dict_data[key]
             if (type(data) == int or type(data) == float):
                 if math.isnan(data):
@@ -104,6 +106,8 @@ def util_read_data_xlsx(filename, sheet):
         for i in data_frame.index:
             dict_data = dict()
             for key in data_frame.columns:
+                if str(key).startswith('Unnamed'):
+                    continue
                 dict_data[key] = data_frame[key][i]
             lst_dict_data.append(dict_data)
 
