@@ -15,7 +15,7 @@ Step 4: 執行主程式
 ```
 
 ## Change Log
-### Vresion: Latest
+### Version: Latest
 #### 1. 隊員資料檔
 - [fixed] 解決因為 Excel 與 LibreOffice 產生 xlsx 格式差異, 造成 len(lst_mem) == 0 讀取失敗的問題.
 ### Version: 8b02d5e62aace3c6df2a2778f3ec7ee60517df05
