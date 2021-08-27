@@ -7,7 +7,6 @@ import time
 from selenium.common.exceptions import TimeoutException
 from browser_auto import BrowserAuto
 
-
 class EnumTabID():
     '''
     Store the National Park Tab IDs
@@ -56,6 +55,7 @@ class ParkAuto():
 
     def __init__(self, dict_arg, team, lst_mem, lst_stay):
         print('Start Taiwan National Park Automation ')
+        self.dict_arg = dict_arg;
         self.park = dict_arg['park']
         self.auto_fill_member_list_at_start_for_demo = dict_arg['auto_fill_member_list_at_start_for_demo']
         self.wait_combox_in_sec = 0.5
@@ -84,8 +84,6 @@ class ParkAuto():
                   2 : self.__run__sheipa__,}
         switch[self.park]()
 
-        #time.sleep(10) # Let the user actually see something!
-
     def click_ok(self):
         '''
         Click ok button.
@@ -105,21 +103,21 @@ class ParkAuto():
         self.__fill_form_leader__(EnumTabID.id_tab_leader)
 
         print('apply')
-        if self.auto_fill_member_list_at_start_for_demo:
-            self.fill_member(b_refilled=0)
+        self.fill_member(b_refilled=0)
         self.__fill_form_stay__(EnumTabID.id_tab_stay)
+        self.dict_arg['WidgetMain'].notify_msgbox('Compolete', '<html> <p style="font-size:16pt">完成.<br></p> <p style="font-size:16pt">請回到瀏覽器按下一步, 檢查行程與成員資料, 沒問題後, 完成送出. <br></p></html>')        
 
     def __run_yushan__(self):
         self.cur_park = 'Yushan'
         self.browser.click('玉山國家公園')
 
         self.browser.click_id('chk[]0') # 確認已於申請前詳閱「進入玉山國家公園生態保護區申請案件個人資料運用說明」，已轉知並取得全體隊員同意使用當事人個人資料辦理入園申請相關事宜。
-        self.browser.click_id('chk[]15')# 入園期間應攜帶入園許可證及身分證明文件正本俾利查核，未攜帶身分證明文件或所攜帶身分證明文件與入園許可證名冊不符者，禁止其入園。已入園者得令其離園。不聽制止或未依前段規定入園者，得依國家公園法第 19條規定處罰。
-        self.browser.click_id('chk[]16')# 領隊已明確告知以下相關事項：
+        self.browser.click_id('chk[]16')# 入園期間應攜帶入園許可證及身分證明文件正本俾利查核，未攜帶身分證明文件或所攜帶身分證明文件與入園許可證名冊不符者，禁止其入園。已入園者得令其離園。不聽制止或未依前段規定入園者，得依國家公園法第 19條規定處罰。
+        self.browser.click_id('chk[]17')# 領隊已明確告知以下相關事項：
                                         #    1.隊伍成員如為中央流行疫情指揮中心公告之「符合通報定義」之人員(詳見:https://www.cdc.gov.tw)，應自行取消入園。
                                         #    2.隊伍成員入園前若有發燒、呼吸道不適或嚴重咳嗽者等症狀，應自行取消入園。
                                         #    3.隊伍所有成員應加強自主健康管理，入園之後如有疑似相關症狀發生，應使用口罩或足可遮掩口鼻物品進入山屋，保護自己也尊重他人。。
-        self.browser.click_id('chk[]17')# 入園申請隊員若具有學生身分或參加學校社團活動，請務必自行通報學校相關單位，作為緊急應變之用。
+        self.browser.click_id('chk[]18')# 入園申請隊員若具有學生身分或參加學校社團活動，請務必自行通報學校相關單位，作為緊急應變之用。
         self.click_ok()
         self.__apply__()
 
@@ -146,119 +144,154 @@ class ParkAuto():
     def __fill_form_schedule__(self, id_tab_schedule):
         dict_team = self.dict_team
         # 路線行程規劃
-        self.browser.click_id(id_tab_schedule)
-
         if self.cur_park != 'Taroko':
-            self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name'], 0) # 隊名
+            self.browser.fill_text('ContentPlaceHolder1_teams_name', dict_team['name'] + datetime.now().strftime("%Y%m%d%H%M%S"), 0) # 隊名
             self.browser.sleep(1); # wait for server checking/response the team name.
-        self.browser.select_inx('ContentPlaceHolder1_climblinemain', dict_team['climbline_main_idx']) # 主路線
-        self.browser.sleep(1); # wait for server checking/response the team name.
-        self.browser.select_inx('ContentPlaceHolder1_climbline', dict_team['climbline_sub_idx']) #次路線
-        self.browser.sleep(1); # wait for server checking/response the team name.
-        self.browser.select_inx('ContentPlaceHolder1_sumday', dict_team['total_day']) # 總天數
+        
+        id_next_step = 'ContentPlaceHolder1_btnToStep22'
 
+        str_infix = '_'
+        id_climbline_main = 'ContentPlaceHolder1'+str_infix+'climblinemain'
+        if self.cur_park == 'Taroko':
+            str_infix = '_step1_'
+            id_climbline_main = 'climblinemain'
+            id_next_step = 'ContentPlaceHolder1_step1_bt_Next_D'
+
+        if self.cur_park == 'Sheipa':
+            id_next_step = 'ContentPlaceHolder1_btnstepdown'
+
+        id_climbline_sub = 'ContentPlaceHolder1'+str_infix+'climbline'
+        id_sum_day = 'ContentPlaceHolder1'+str_infix+'sumday'
+        id_date_applystart = 'ContentPlaceHolder1'+str_infix+'applystart'
+
+        self.browser.select_inx(id_climbline_main, dict_team['climbline_main_idx']) # 主路線
+        self.browser.sleep(1); # wait for server checking/response the team name.
+        self.browser.select_inx(id_climbline_sub, dict_team['climbline_sub_idx']) #次路線
+        self.browser.sleep(1); # wait for server checking/response the team name.
+        self.browser.select_inx(id_sum_day, dict_team['total_day']) # 總天數
+
+        if self.cur_park == 'Taroko':
+            self.browser.click_id('ContentPlaceHolder1_step1_noteCheck_CheckBox') # 奇萊主北線與奇萊連峰線為共同承載量(平日40人、假日60人)。自109年2月21日零時起免辦入山許可證。
+                                                                                  # 依中央流行疫情指揮中心及營建署「國家公園區域因應COVID-19疫情警戒第2級之遊憩人流出入管制措施」指引，自8/10日至8/23日生態保護區內各登山路線依平日承載量降載開放。
         try:
             date_applystart_idx = (datetime.strptime(dict_team['date_applystart'], '%Y-%m-%d') - (datetime.now() + timedelta(4))).days + 1 # 入園日期
         except Exception as ex:
             print(ex)
             date_applystart_idx = 1 # 入園日期 (default idx = 1)
         print('date_applystart_idx: ', date_applystart_idx)
-        self.browser.select_inx('ContentPlaceHolder1_applystart', date_applystart_idx)
-
-
-        #if self.cur_park == 'Taroko':
-        #    self.browser.handle_alert_popup() # handle the altert widnow for Taroko National Park (系統開放每日7:00-23:00可進行線上申請，已於7:00前進入系統者，請您手動重新整理頁面或重新登入)
+        self.browser.select_inx(id_date_applystart, date_applystart_idx)
 
         # Create pseudo travel plan
         if self.cur_park == 'Yushan':
             # Pseudo Plan: 登山口排雲登山服務中心→登山口塔塔加登山口→一般玉山前峰→登山口塔塔加登山口→登山口排雲登山服務中心
-            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
-            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
-            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
-            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
-            self.browser.click_id('ContentPlaceHolder1_rblNode_1')
+            print('Use default')
 
         if self.cur_park == 'Taroko':
             # Pseudo Plan: 登山口奇萊登山口→宿營地黑水塘山屋→登山口奇萊登山口
-            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
-            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
-            self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_step1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_step1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_step1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_step1_btnover') # 完成今日路線
+            print('Use default')
 
         if self.cur_park == 'Sheipa':
             # Pseudo Plan: 雪山登山口→雪山東峰→雪山登山口
             self.browser.click_id('ContentPlaceHolder1_rblNode_0')
             self.browser.click_id('ContentPlaceHolder1_rblNode_0')
             self.browser.click_id('ContentPlaceHolder1_rblNode_0')
+            self.browser.click_id('ContentPlaceHolder1_btnover') # 完成今日路線
+            print('Use default')
 
-        self.browser.click_id('ContentPlaceHolder1_btnover')   # 完成今日路線
-        self.browser.select_inx('ContentPlaceHolder1_teams_count', dict_team['member_count']) # 人數
+        self.dict_arg['WidgetMain'].notify_msgbox('Edit', '<html> <p style="font-size:16pt">Step 1: 請開始編修你的行程：主路線, 次路線, 登山總日數, 入園日期, 路線規劃.<br></p> <p style="font-size:16pt">Step 2: 完成後回到此視窗按 OK. <br></p><p>程式會自動繼續幫你填寫隊員資料. <br></p></html>');
+        self.browser.click_id(id_next_step) # new: [下一步] button
 
     def __fill_form_applyer__(self, id_tab_applyer):
-        self.browser.click_id(id_tab_applyer)
+        id_applycheck = 'ContentPlaceHolder1_applycheck'
+        str_infix = '_';
+        if self.cur_park == 'Taroko':
+            str_infix = '_step2_'
+        id_applycheck = 'ContentPlaceHolder1'+str_infix+'applycheck'
+
+        self.browser.click_id('headingOne') # open '申請人資料' collapse
+        self.browser.click_id(id_applycheck) # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令
 
         dict_id = {}
-        dict_id['id_name'] = 'ContentPlaceHolder1_apply_name'
-        dict_id['id_tel'] = 'ContentPlaceHolder1_apply_tel'
-        dict_id['id_country'] = 'ContentPlaceHolder1_ddlapply_country'
-        dict_id['id_city'] = 'ContentPlaceHolder1_ddlapply_city'
-        dict_id['id_address'] = 'ContentPlaceHolder1_apply_addr'
-        dict_id['id_mobile'] = 'ContentPlaceHolder1_apply_mobile'
-        dict_id['id_fax'] = 'ContentPlaceHolder1_apply_fax'
-        dict_id['id_email'] = 'ContentPlaceHolder1_apply_email'
-        dict_id['id_pid_nation'] = 'ContentPlaceHolder1_apply_nation'
-        dict_id['id_pid_num'] = 'ContentPlaceHolder1_apply_sid'
-        dict_id['id_sex'] = 'ContentPlaceHolder1_apply_sex'
-        dict_id['id_birthday'] = 'ContentPlaceHolder1_apply_birthday'
-        dict_id['id_contact_name'] = 'ContentPlaceHolder1_apply_contactname'
-        dict_id['id_contact_tel'] = 'ContentPlaceHolder1_apply_contacttel'
-
-        self.browser.click_id('ContentPlaceHolder1_applycheck') # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令
+        dict_id['id_name'] = 'ContentPlaceHolder1'+str_infix+'apply_name'
+        dict_id['id_tel'] = 'ContentPlaceHolder1'+str_infix+'apply_tel'
+        dict_id['id_country'] = 'ContentPlaceHolder1'+str_infix+'ddlapply_country'
+        dict_id['id_city'] = 'ContentPlaceHolder1'+str_infix+'ddlapply_city'
+        dict_id['id_address'] = 'ContentPlaceHolder1'+str_infix+'apply_addr'
+        dict_id['id_mobile'] = 'ContentPlaceHolder1'+str_infix+'apply_mobile'
+        dict_id['id_fax'] = 'ContentPlaceHolder1'+str_infix+'apply_fax'
+        dict_id['id_email'] = 'ContentPlaceHolder1'+str_infix+'apply_email'
+        dict_id['id_pid_nation'] = 'ContentPlaceHolder1'+str_infix+'apply_nation'
+        dict_id['id_pid_num'] = 'ContentPlaceHolder1'+str_infix+'apply_sid'
+        dict_id['id_sex'] = 'ContentPlaceHolder1'+str_infix+'apply_sex'
+        dict_id['id_birthday'] = 'ContentPlaceHolder1'+str_infix+'apply_birthday'
+        dict_id['id_contact_name'] = 'ContentPlaceHolder1'+str_infix+'apply_contactname'
+        dict_id['id_contact_tel'] = 'ContentPlaceHolder1'+str_infix+'apply_contacttel'
 
         # leader
-        self.__fill_member_detail__(0, dict_id, self.lst_mem, 0)
+        self.__fill_member_detail__(0, dict_id, self.lst_mem, 0, False)
 
         # # verify
         # self.browser.click_id(id_tab_applyer)
         # ok, set_failure_key, msg = self.__fill_member_detail_verify__(0, dict_id, self.lst_mem)
 
     def __fill_form_leader__(self, id_tab_leader):
-        id_leader = 'ContentPlaceHolder1_copyapply'
-        self.browser.click_id(id_tab_leader)
-        self.browser.click_id(id_leader)
+        str_infix = '_';
+        if self.cur_park == 'Taroko':
+            str_infix = '_step2_'
+
+        self.browser.click_id('headingTwo') # Open '領隊資料' collapse
+        id_leader = 'ContentPlaceHolder1'+str_infix+'copyapply'
+        self.browser.click_id(id_leader) # The same as the "applyer"
 
     def __fill_form_member__(self, id_tab_member, b_refilled):
-        id_confirm = 'ContentPlaceHolder1_member_keytype' # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令。
-        self.browser.click_id(id_tab_member)
+        id_add_member = 'ContentPlaceHolder1_lbInsMember'
+        str_infix = '_';
+        if self.cur_park == 'Taroko':
+            str_infix = '_step2_'
+            id_add_member = 'ContentPlaceHolder1_step2_addmember'
 
+        if self.cur_park == 'Sheipa':
+            id_add_member = 'ContentPlaceHolder1_addmember'
+
+        self.browser.click_id('headingThree') # Open '隊員資料' collapse
+        id_confirm = 'ContentPlaceHolder1'+str_infix+'member_keytype' # 請確認領隊或隊員同意委託申請人代理蒐集當事人個人資料，並委託其上網向國家公園管理處提出入園申請，以免違反相關法令。
         if self.browser.get_attribute('checked', id_confirm) != 'true':
             self.browser.click_id(id_confirm)
             print('self.browser.driver.window_handles = ', self.browser.driver.window_handles)
             self.browser.handle_alert_popup()
 
         dict_id = {}
-        dict_id['id_name'] = 'ContentPlaceHolder1_lisMem_member_name'
-        dict_id['id_tel'] = 'ContentPlaceHolder1_lisMem_member_tel'
-        dict_id['id_country'] = 'ContentPlaceHolder1_lisMem_ddlmember_country'
-        dict_id['id_city'] = 'ContentPlaceHolder1_lisMem_ddlmember_city'
-        dict_id['id_address'] = 'ContentPlaceHolder1_lisMem_member_addr'
-        dict_id['id_mobile'] = 'ContentPlaceHolder1_lisMem_member_mobile'
-        dict_id['id_email'] = 'ContentPlaceHolder1_lisMem_member_email'
-        dict_id['id_pid_nation'] = 'ContentPlaceHolder1_lisMem_member_nation'
-        dict_id['id_pid_num'] = 'ContentPlaceHolder1_lisMem_member_sid'
-        dict_id['id_sex'] = 'ContentPlaceHolder1_lisMem_member_sex'
-        dict_id['id_birthday'] = 'ContentPlaceHolder1_lisMem_member_birthday'
-        dict_id['id_contact_name'] = 'ContentPlaceHolder1_lisMem_member_contactname'
-        dict_id['id_contact_tel'] = 'ContentPlaceHolder1_lisMem_member_contacttel'
+        dict_id['id_name'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_name'
+        dict_id['id_tel'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_tel'
+        dict_id['id_country'] = 'ContentPlaceHolder1'+str_infix+'lisMem_ddlmember_country'
+        dict_id['id_city'] = 'ContentPlaceHolder1'+str_infix+'lisMem_ddlmember_city'
+        dict_id['id_address'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_addr'
+        dict_id['id_mobile'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_mobile'
+        dict_id['id_email'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_email'
+        dict_id['id_pid_nation'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_nation'
+        dict_id['id_pid_num'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_sid'
+        dict_id['id_sex'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_sex'
+        dict_id['id_birthday'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_birthday'
+        dict_id['id_contact_name'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_contactname'
+        dict_id['id_contact_tel'] = 'ContentPlaceHolder1'+str_infix+'lisMem_member_contacttel'
 
         lst_mem = self.lst_mem
         for i in range(1, len(lst_mem)):
-            self.__fill_member_detail__(i, dict_id, lst_mem, b_refilled)
+            time.sleep(self.wait_combox_in_sec)
+            self.browser.click_id(id_add_member) # Click '新增隊員'
+            if self.cur_park == 'Taroko' or self.cur_park == 'Sheipa':
+                self.browser.click_by_xpath('//*[@id="accordion2"]/div[' + str(i) + ']/div[1]/h4/a[1]')
+            self.__fill_member_detail__(i, dict_id, lst_mem, b_refilled, True)
 
         # # verify
         # for i in range(1, len(lst_mem)):
         #     ok, set_failure_key, msg = self.__fill_member_detail_verify__(i, dict_id, self.lst_mem)
 
-    def __fill_member_detail__(self, i, dict_id, lst_mem, b_refilled):
+    def __fill_member_detail__(self, i, dict_id, lst_mem, b_refilled, b_fill_member):
         self.browser.speed_up()
         if i == 0:
             str_idx = ''
@@ -268,6 +301,18 @@ class ParkAuto():
         self.browser.fill_text(dict_id['id_tel']+str_idx, lst_mem[i]['id_tel'], b_refilled) # 電話
         self.browser.fill_text(dict_id['id_country']+str_idx, lst_mem[i]['id_country'], b_refilled) # contry
         time.sleep(self.wait_combox_in_sec) # 因為前面是下拉, 所以要等一下, 讓下拉收回去
+
+        if b_fill_member:
+            if self.cur_park == 'Yushan':
+                self.browser.click_id('headingThree') # [Server Bug?] Open '隊員資料' collapse
+            
+            if self.cur_park == 'Taroko':
+                self.browser.click_id('headingThree') # [Server Bug?] Open '隊員資料' collapse
+                if i == 1: #[Server Bug?] 隊員資料未展開
+                    self.browser.click_by_xpath('//*[@id="accordion2"]/div/div[1]/h4/a[1]')
+                else:
+                    self.browser.click_by_xpath('//*[@id="accordion2"]/div[' + str(i) + ']/div[1]/h4/a[1]')
+
         self.browser.fill_text(dict_id['id_city']+str_idx, lst_mem[i]['id_city'], b_refilled) # city
         time.sleep(self.wait_combox_in_sec) # 因為前面是下拉, 所以要等一下, 讓下拉收回去
         self.browser.fill_text(dict_id['id_address']+str_idx, lst_mem[i]['id_address'], b_refilled) # address
@@ -277,6 +322,10 @@ class ParkAuto():
         self.browser.fill_text(dict_id['id_email']+str_idx, lst_mem[i]['id_email'], b_refilled) # email
         self.browser.fill_text(dict_id['id_pid_nation']+str_idx, lst_mem[i]['id_pid_nation'], b_refilled)
         time.sleep(self.wait_combox_in_sec) # 因為前面是下拉, 所以要等一下, 讓下拉收回去
+
+        if  b_fill_member and self.cur_park == 'Yushan':
+            self.browser.click_id('headingThree') # [Server Render Bug?]  Open '隊員資料' collapse
+
         self.browser.fill_text(dict_id['id_pid_num']+str_idx, lst_mem[i]['id_pid_num'], b_refilled)
         self.browser.fill_text(dict_id['id_sex']+str_idx, lst_mem[i]['id_sex'], b_refilled)
         self.browser.set_yyyymmdd(dict_id['id_birthday']+str_idx, lst_mem[i]['id_birthday_yyyy'], lst_mem[i]['id_birthday_mm'], lst_mem[i]['id_birthday_dd'])
@@ -333,10 +382,15 @@ class ParkAuto():
         return b_ok, set_failure_key, msg
 
     def __fill_form_stay__(self, id_tab_stay):
-        self.browser.click_id(id_tab_stay)
+        str_infix = '_';
+        if self.cur_park == 'Taroko':
+            str_infix = '_step2_'
+
+        self.browser.click_id('headingFour') # Open '留守人' collapse
+        # self.browser.click_id(id_tab_stay)
 
         dict_id = {}
-        pre = 'ContentPlaceHolder1' + '_stay'
+        pre = 'ContentPlaceHolder1' + str_infix +'stay'
         dict_id['id_name'] = pre + '_name'
         dict_id['id_tel'] = pre + '_tel'
         dict_id['id_mobile'] = pre + '_mobile'

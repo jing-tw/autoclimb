@@ -48,6 +48,14 @@ def __notify_message__(str_line1, str_line2):
     print('[auto-test] override method: __notify_message__')
     return 1
 
+@add_method(AutoClimbWidget)
+def notify_msgbox(str_title, str_content):
+    ''' OVERRIDE: Auto accept.
+    '''
+    #pylint: disable = unused-variable
+    print('[auto-test] override method: notify_msgbox')
+    return 1
+
 
 class TestAutoClimbWidgetDemo(TestBaseWidget2):
     # def test_all(self, qtbot, monkeypatch):

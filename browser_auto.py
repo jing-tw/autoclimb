@@ -84,6 +84,7 @@ class BrowserAuto:
         fun_switch = {
             'click': self.__click__,
             'click_id': self.__click_id__,
+            'click_by_xpath':self.__click_by_xpath__,
             'fill_text': self.__fill_text__,
             'select_inx': self.__select_inx__,
             'set_yyyymmdd': self.__set_yyyymmdd__,
@@ -133,6 +134,19 @@ class BrowserAuto:
 
         return 1, 'ok'
 
+    def click_by_xpath(self, str_xpath):
+        self.sleep(1)
+        dict_arg = {}
+        dict_arg['str_xpath'] = str_xpath
+        return self.__do_action__('click_by_xpath', dict_arg)
+
+    def __click_by_xpath__(self, dict_arg):
+        str_xpath = dict_arg['str_xpath']
+        element = self._get_ele_by_xpath(str_xpath)
+        element.click()
+
+        return 1, 'ok'
+
     def fill_text(self, str_id, str_text, b_refilled):
         '''
         Fill text.
@@ -166,7 +180,6 @@ class BrowserAuto:
         self.__scroll_to_element__(element)
 
         if b_refilled:
-
             element.send_keys(Keys.CONTROL, 'a')
         element.send_keys(str_text)
 
@@ -263,4 +276,11 @@ class BrowserAuto:
             EC.element_to_be_clickable((By.ID, str_id))
         )
 
+        return element
+
+    def _get_ele_by_xpath(self, str_xpath):
+        element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, str_xpath)) and
+            EC.element_to_be_clickable((By.XPATH, str_xpath))
+        )
         return element

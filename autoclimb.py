@@ -27,7 +27,7 @@ class AutoClimbWidget(AutoTestLayerWidget):
     def __init__(self):
         super().__init__(None)
         self.obj_auto = None
-        self.bt_fill_member = None
+        #self.bt_fill_member = None
         self.text_status = None
         self.dict_arg = None
 
@@ -36,7 +36,7 @@ class AutoClimbWidget(AutoTestLayerWidget):
         bt_yushan = PicButton(QPixmap('./res/img/Yushan.png'))
         bt_taroko = PicButton(QPixmap('./res/img/Taroko.png'))
         bt_sheipa = PicButton(QPixmap('./res/img/Sheipa.png'))
-        self.bt_fill_member = PicButton(QPixmap('./res/img/member_auto.png'))
+        #self.bt_fill_member = PicButton(QPixmap('./res/img/member_auto.png'))
 
         self.autotest_add(bt_yushan, 'bt_yushan')
         self.autotest_add(bt_taroko, 'bt_taroko')
@@ -58,8 +58,8 @@ class AutoClimbWidget(AutoTestLayerWidget):
         # layouer: middle
         box_button2 = QtWidgets.QHBoxLayout()
         box_button2.addStretch(1)
-        box_button2.addWidget(self.bt_fill_member)
-        self.bt_fill_member.setVisible(False)
+        #box_button2.addWidget(self.bt_fill_member)
+        #self.bt_fill_member.setVisible(False)
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addLayout(box_button)
@@ -70,7 +70,7 @@ class AutoClimbWidget(AutoTestLayerWidget):
         bt_yushan.clicked.connect(self.__run_yushan__)
         bt_taroko.clicked.connect(self.__run_taroko__)
         bt_sheipa.clicked.connect(self.__run_sheipa__)
-        self.bt_fill_member.clicked.connect(self.__run_fill_member__) # re-fill the member data
+        #self.bt_fill_member.clicked.connect(self.__run_fill_member__) # re-fill the member data
 
         self.dict_arg = {}
         self.dict_arg['memberlist'] = DEFAULT_MEMBERLIST
@@ -86,7 +86,9 @@ class AutoClimbWidget(AutoTestLayerWidget):
         self.setWindowTitle(PROG_NAME + '(commit id): ' + strversion)
 
     def __check_version__(self):
-        _, desc, local_id = __check_update__()
+        ret, desc, local_id = __check_update__()
+        if ret == 0:
+            return
         out = desc + '<div align=\"left\">' + \
                      '版本號碼:' + local_id.decode("utf-8").rstrip() + '.</div>'
         print(out)
@@ -161,21 +163,17 @@ class AutoClimbWidget(AutoTestLayerWidget):
                 return
 
             print('資料檔格式資訊\n\t{} : {}'.format(lst_meta[0]['item'], lst_meta[0]['value'])) # 資料檔版本資訊 index = 0
-
-            # Todo: Remove the code
-            # reply = self.__ask_autofill_member__()
-            # print('reply = ', reply)
-            # end of Todo
-
+            self.dict_arg['WidgetMain'] = self;
             self.obj_auto = ParkAuto(self.dict_arg, team, lst_mem, lst_stay)
             self.obj_auto.run()
 
+            # Todo: remove bt_fill_member
             # show re-fill member button only when obj_auto_run exist
-            self.bt_fill_member.setVisible(True)
-            self.__update_status__('完成. <br> 右側按鈕: 可以自動填入隊員資料')
+            # self.bt_fill_member.setVisible(True)
+            # self.__update_status__('完成. <br> 右側按鈕: 可以自動填入隊員資料')
 
             self.activateWindow()  # show the control panel
-            self.__ack_continue_fill_schedule__()
+            # self.__ack_continue_fill_schedule__()
         except Exception as err:
             traceback.print_exc()
             msg = '\n\n查閱上方錯誤訊息, 進行檢測.\n\n1.請確定你的機器是否連上網際網路\n2.瀏覽器是否已經被關閉了\n3.有可能是瀏覽器版本太舊了, 請更新你的瀏覽器版本.\n4.若前面都檢查過, 那可能是其他問題, 請複製上方錯誤資訊 call stack 發出 error issue 到 github.\n\nDetail:{}'.format(format(err))
@@ -194,34 +192,21 @@ class AutoClimbWidget(AutoTestLayerWidget):
                     QMessageBox.Ok)
         return reply
 
+    def notify_msgbox(self, str_title, str_content):
+        reply = QMessageBox.question(None, str_title, str_content, QMessageBox.Ok)
+        return reply
+
     def __ack_continue_fill_schedule__(self):
-        #reply = self.__notify_message__('隊員資料自動填寫完成. 編修你的登山行程.\n\nStep 1. 回到瀏覽器視窗.\nStep 2.切到 [行程] 頁面, 修改自己的行程.\nStep 3. 點選 [自動填入隊員資料] 按鈕', '開始編輯你的登山行程')
-        #return reply
         reply = QMessageBox.question(self, '你可以開始動手編輯團隊登山行程', \
                     '<html> <p style="font-size:16pt">隊員資料自動填寫完成. 請編修你的登山行程<br></p><p style="font-size:16pt">Step 1. 回到瀏覽器視窗<br></p><p style="font-size:16pt">Step 2.切到 [行程] 頁面, 修改自己的行程.<br></p><p style="font-size:16pt">Step 3. 點選下面 [自動填入成員資料] 按鈕<br></p></html>', \
                     QMessageBox.Ok)
         return reply
-
-    # Todo: Remove the code
-    # def __ask_autofill_member__(self):
-    #     reply = QMessageBox.question(self, 'Continue?', \
-    #                 '<html> <p style="font-size:16pt"> 自動填入隊員資料? (稍後可重複動作) </p></html>', \
-    #                 QMessageBox.Yes, QMessageBox.No)
-
-    #     if reply == QMessageBox.Yes:
-    #         print('reply = ', 'Yes')
-    #         self.dict_arg['auto_fill_member_list_at_start_for_demo'] = True
-    #     else:
-    #         print('reply = ', 'NO')
-    #         self.dict_arg['auto_fill_member_list_at_start_for_demo'] = False
-    #     return reply
 
     def __get_filename__(self):
         print('load')
         lst_filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', '.', '*.xlsx')
         if lst_filename:
             print(lst_filename[0])
-            #self.dict_arg['memberlist'] = lst_filename[0]
             return 1, lst_filename[0], 'ok'
         return 0, None, '[Warning] getOpenFileName Failure or Cancel.'
 
